@@ -1,0 +1,8 @@
+﻿// See https://aka.ms/new-console-template for more information
+using TextManipulationLibrary;
+
+string input = "NA21A/SVESVE02	090909-0909\r\n\r\nNA21A/SVESVE02	 090909-0909 , 080808 0808 \r\nNA21A/SVESVE02\r\nNA21A/SVESVE02 \r\nNA21A/SVESVE02	090909-0909,\r\nNA21A/SVESVE02	090909-0909,080808-0808,070707-0707,060606-0606\r\nNA21B/SVESVE02	100909-0909,080808-0808,070707-0707,060606-0606,050505-0505\r\nNA21B/SVESVE02	110909-0909,080808-0808,070707-0707,060606-0606";
+
+ManageText mt = new(input);
+
+//Console.WriteLine($"Output:{Environment.NewLine}{mt.GetTextOutput()}");
