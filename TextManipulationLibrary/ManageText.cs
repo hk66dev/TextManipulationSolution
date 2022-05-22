@@ -104,7 +104,7 @@ namespace TextManipulationLibrary
                 // if currentId equal to line.Id add text to string
                 if (currentId == line.Id)
                 {
-                    newString += $"{line.Text.Trim()}/t";
+                    newString += $"{line.Text.Trim()},";
                 }
                 else
                 {
@@ -112,13 +112,13 @@ namespace TextManipulationLibrary
                     if (newString != string.Empty)
                     {
                         // Add line to report
-                        report.Append($"{line.Id.Trim()}\t{newString.Trim()}");
+                        report.Append($"{line.Id.Trim()}\t{newString.Trim()}{Environment.NewLine}");
                     }
 
                     // update currentId
                     currentId = line.Id;
                     // update newString
-                    newString = $"{line.Text.Trim()}/t";
+                    newString = $"{line.Id.Trim()}\t{line.Text.Trim()},";
                 }
             }
 
