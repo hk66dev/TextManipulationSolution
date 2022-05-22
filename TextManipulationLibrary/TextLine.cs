@@ -11,10 +11,16 @@ namespace TextManipulationLibrary
         public string Id { get; }
         public string Text { get; } 
 
+        /// <summary>
+        /// Textline
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="text"></param>
         public TextLine(string id, string text)
         {
             Id = id;
             Text = text;
         }
+
     }
 }

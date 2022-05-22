@@ -40,7 +40,7 @@ namespace TextManipulationLibrary
                         // splitt second part and check if there is separators
                         var s = columns[1].Split(Separators, 2, StringSplitOptions.None);
                         // check if second part has separators
-                        if (s.Length > 0)
+                        if (s.Length > 1)
                         {
                             // if so set isManySeparatorTypeOfText = true
                             isManySeparatorTypeOfInputString = true;
@@ -50,8 +50,20 @@ namespace TextManipulationLibrary
                         break;
                 }
 
-                // Add new text line to list
-                TextLine tl = new(columns[0], columns[1]);
+
+                // format new textline
+                TextLine tl;
+                if (columns.Length > 1)
+                {
+                    tl = new(columns[0], columns[1]);
+
+                }
+                else
+                {
+                    tl = new(columns[0], String.Empty);
+                }
+
+                // add textline to list
                 textLines.Add(tl);
             }
 
