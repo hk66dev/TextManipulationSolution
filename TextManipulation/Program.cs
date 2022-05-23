@@ -18,6 +18,10 @@ sbInput.Append($"NA21A/SVESVE02	 060909 0909{Environment.NewLine}");
 sbInput.Append($"NA21A/SVESVE02	 070909 0909 {Environment.NewLine}");
 sbInput.Append($"BF21A/ENGENG06	 080909 0909 {Environment.NewLine}");
 sbInput.Append($"BF21A/ENGENG06	 090909 0909 {Environment.NewLine}");
+sbInput.Append($"IND2/ENGENG06	 110909 0909 {Environment.NewLine}");
+sbInput.Append($"BF21A/ENGENG06	 100909 0909 {Environment.NewLine}");
+sbInput.Append($"IND2/ENGENG06	 110909 0909 {Environment.NewLine}");
+sbInput.Append($"IND2/ENGENG06	 110909 0909 {Environment.NewLine}");
 
 ////Check if character is whitespece
 //bool result;

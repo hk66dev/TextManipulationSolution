@@ -68,6 +68,12 @@ namespace TextManipulationLibrary
             // initiate output variable
             string output = string.Empty;
 
+            // order the list
+            textLines = textLines
+                .OrderBy(x => x.Id)
+                .ThenBy(x => x.Text)
+                .ToList();
+
             // alter output text depending on number of separators
             switch (isManySeparatorTypeOfInputString)
             {
@@ -99,109 +105,41 @@ namespace TextManipulationLibrary
             TextLine formatTextline;
             List<TextLine> tempTextLines = new();
 
-            int index = 0;
-
-            do
+            foreach (TextLine line in textLines)
             {
-                if (currentId != textLines[index].Id)
+                // alter text and put in temporary list
+                if (currentId != line.Id)
                 {
                     if (tempText.Count > 0)
                     {
                         formatTextline = new(currentId, String.Join(",", tempText));
                         tempText = new();
                         tempTextLines.Add(formatTextline);
-
                     }
-                    currentId = textLines[index].Id;
-                    tempText.Add(textLines[index].Text);
+                    currentId = line.Id;
+                    tempText.Add(line.Text.Trim());
                 }
                 else
                 {
-                    tempText.Add(textLines[index].Text);
+                    tempText.Add(line.Text.Trim());
                 }
+            }
 
-                index++;
-
-            } while (index < textLines.Count());
-
+            // put last row in temporary list
             if (tempText.Count > 0)
             {
                 formatTextline = new(currentId, String.Join(",", tempText));
-                tempText = new();
                 tempTextLines.Add(formatTextline);
-
             }
 
-            //int index = 0;
-
-            //while (index < textLines.Count())
-            //{
-
-            //    if (currentId != textLines[index].Id)
-            //    {
-            //        if (tempText.Count > 0)
-            //        {
-            //            formatTextline = new(currentId, String.Join(",", tempText));
-            //            tempText = new();
-            //            tempTextLines.Add(formatTextline);
-
-            //        }
-            //        currentId = textLines[index].Id;
-            //        tempText.Add(textLines[index].Text);
-            //    }
-            //    else
-            //    {
-            //        tempText.Add(textLines[index].Text);
-            //    }
-
-            //    index++;
-            //}
-
+            // loop through temporary list and add to report
             foreach (var item in tempTextLines)
             {
-
                 // Add line to report
                 report.Append($"{item.Id.Trim()}\t{item.Text.Trim()}{Environment.NewLine}");
-
             }
 
-            //foreach (TextLine line in textLines)
-            //{
-            //    if (currentId != line.Id)
-            //    {
-            //        currentId = line.Id;
-            //    }
-            //    else
-            //    {
-            //        tempTextLines.Add($"{line.Text.Trim()}");
-            //    }
-
-            //    //string s = string.Join(",", strList);
-
-
-            //    //// if currentId equal to line.Id add text to string line.Text.Trim()
-            //    //if (currentId == line.Id)
-            //    //{
-            //    //    newString += $"{line.Text.Trim()},";
-            //    //}
-            //    //else
-            //    //{
-            //    //    // if newString not empty add new line to report
-            //    //    if (newString != string.Empty)
-            //    //    {
-            //    //        // Add line to report
-            //    //        report.Append($"{newString.Trim()}{Environment.NewLine}");
-            //    //    }
-
-            //    //    // update currentId
-            //    //    currentId = line.Id;
-            //    //    // update newString
-            //    //    newString = $"{line.Id.Trim()}\t{line.Text.Trim()},";
-            //    //}
-            //}
-
-
-             return report.ToString();
+            return report.ToString();
         }
 
         /// <summary>
