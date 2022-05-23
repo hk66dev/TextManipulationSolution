@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TextManipulationLibrary
 {
@@ -17,7 +14,7 @@ namespace TextManipulationLibrary
             Separators = separators;
         }
 
-    
+
         private List<TextLine> textLines = new();
         bool isManySeparatorTypeOfInputString = false;
 
@@ -97,32 +94,114 @@ namespace TextManipulationLibrary
 
             // on each id gather multiple text strings 
             string currentId = string.Empty;
-            string newString = string.Empty;    
+            string newText = string.Empty;
+            List<string> tempText = new();
+            TextLine formatTextline;
+            List<TextLine> tempTextLines = new();
 
-            foreach (TextLine line in textLines)
+            int index = 0;
+
+            do
             {
-                // if currentId equal to line.Id add text to string
-                if (currentId == line.Id)
+                if (currentId != textLines[index].Id)
                 {
-                    newString += $"{line.Text.Trim()},";
+                    if (tempText.Count > 0)
+                    {
+                        formatTextline = new(currentId, String.Join(",", tempText));
+                        tempText = new();
+                        tempTextLines.Add(formatTextline);
+
+                    }
+                    currentId = textLines[index].Id;
+                    tempText.Add(textLines[index].Text);
                 }
                 else
                 {
-                    // if newString not empty append new line to report
-                    if (newString != string.Empty)
-                    {
-                        // Add line to report
-                        report.Append($"{line.Id.Trim()}\t{newString.Trim()}{Environment.NewLine}");
-                    }
-
-                    // update currentId
-                    currentId = line.Id;
-                    // update newString
-                    newString = $"{line.Id.Trim()}\t{line.Text.Trim()},";
+                    tempText.Add(textLines[index].Text);
                 }
+
+                index++;
+
+            } while (index < textLines.Count());
+
+            if (tempText.Count > 0)
+            {
+                formatTextline = new(currentId, String.Join(",", tempText));
+                tempText = new();
+                tempTextLines.Add(formatTextline);
+
             }
 
-            return report.ToString();
+            //int index = 0;
+
+            //while (index < textLines.Count())
+            //{
+
+            //    if (currentId != textLines[index].Id)
+            //    {
+            //        if (tempText.Count > 0)
+            //        {
+            //            formatTextline = new(currentId, String.Join(",", tempText));
+            //            tempText = new();
+            //            tempTextLines.Add(formatTextline);
+
+            //        }
+            //        currentId = textLines[index].Id;
+            //        tempText.Add(textLines[index].Text);
+            //    }
+            //    else
+            //    {
+            //        tempText.Add(textLines[index].Text);
+            //    }
+
+            //    index++;
+            //}
+
+            foreach (var item in tempTextLines)
+            {
+
+                // Add line to report
+                report.Append($"{item.Id.Trim()}\t{item.Text.Trim()}{Environment.NewLine}");
+
+            }
+
+            //foreach (TextLine line in textLines)
+            //{
+            //    if (currentId != line.Id)
+            //    {
+            //        currentId = line.Id;
+            //    }
+            //    else
+            //    {
+            //        tempTextLines.Add($"{line.Text.Trim()}");
+            //    }
+
+            //    //string s = string.Join(",", strList);
+
+
+            //    //// if currentId equal to line.Id add text to string line.Text.Trim()
+            //    //if (currentId == line.Id)
+            //    //{
+            //    //    newString += $"{line.Text.Trim()},";
+            //    //}
+            //    //else
+            //    //{
+            //    //    // if newString not empty add new line to report
+            //    //    if (newString != string.Empty)
+            //    //    {
+            //    //        // Add line to report
+            //    //        report.Append($"{newString.Trim()}{Environment.NewLine}");
+            //    //    }
+
+            //    //    // update currentId
+            //    //    currentId = line.Id;
+            //    //    // update newString
+            //    //    newString = $"{line.Id.Trim()}\t{line.Text.Trim()},";
+            //    //}
+            //}
+
+
+             return report.ToString();
         }
 
         /// <summary>

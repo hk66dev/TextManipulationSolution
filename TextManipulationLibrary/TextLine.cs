@@ -22,5 +22,14 @@ namespace TextManipulationLibrary
             Text = text;
         }
 
+        /// <summary>
+        /// Empty constructor
+        /// </summary>
+        public TextLine()
+        {
+            Id = string.Empty;
+            Text = string.Empty;
+        }
+
     }
 }
