@@ -23,45 +23,52 @@ namespace TextManipulationLibrary
             //todo
             foreach (var line in GetNextLine(InputText))
             {
-                // split line in two parts
-                string[] columns = line.Split(Separators, 2, StringSplitOptions.TrimEntries);
-
-                switch (columns.Length)
+                if (line.Length > 0)
                 {
-                    case 0:
-                        break;
-                    case 1:
-                        columns.Append(string.Empty);
-                        break;
-                    case 2:
-                        // splitt second part and check if there is separators
-                        var s = columns[1].Split(Separators, 2, StringSplitOptions.None);
-                        // check if second part has separators
-                        if (s.Length > 1)
+                    // split line in two parts
+                    string[] columns = line.Split(Separators, 2, StringSplitOptions.TrimEntries);
+
+                    if (columns[0].Length > 0 || columns[1].Length > 0)
+                    {
+                        switch (columns.Length)
                         {
-                            // if so set isManySeparatorTypeOfText = true
-                            isManySeparatorTypeOfInputString = true;
+                            case 0:
+                                break;
+                            case 1:
+                                //columns.Append(string.Empty);
+                                columns.Append("tom");
+                                columns.Append("tom2");
+                                break;
+                            case 2:
+                                // splitt second part
+                                var s = columns[1].Split(Separators, 2, StringSplitOptions.None);
+                                // check if second part has separators
+                                if (s.Length > 1)
+                                {
+                                    // if so set isManySeparatorTypeOfText = true
+                                    isManySeparatorTypeOfInputString = true;
+                                }
+                                break;
+                            default:
+                                break;
                         }
-                        break;
-                    default:
-                        break;
+
+                        // format new textline
+                        TextLine tl;
+                        if (columns.Length > 1)
+                        {
+                            tl = new(columns[0], columns[1]);
+
+                        }
+                        else
+                        {
+                            tl = new(columns[0], String.Empty);
+                        }
+
+                        // add textline to list
+                        textLines.Add(tl);
+                    }
                 }
-
-
-                // format new textline
-                TextLine tl;
-                if (columns.Length > 1)
-                {
-                    tl = new(columns[0], columns[1]);
-
-                }
-                else
-                {
-                    tl = new(columns[0], String.Empty);
-                }
-
-                // add textline to list
-                textLines.Add(tl);
             }
 
 
