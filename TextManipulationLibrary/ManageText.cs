@@ -14,7 +14,6 @@ namespace TextManipulationLibrary
             Separators = separators;
         }
 
-
         private List<TextLine> textLines = new();
         bool isManySeparatorTypeOfInputString = false;
 
@@ -25,46 +24,37 @@ namespace TextManipulationLibrary
             {
                 if (line.Length > 0)
                 {
+                    // Initiate list
+                    List<string> columns = new List<string>();
                     // split line in two parts
-                    string[] columns = line.Split(Separators, 2, StringSplitOptions.TrimEntries);
+                    columns = line.Split(Separators, 2, StringSplitOptions.TrimEntries).ToList();
+
+                    if (columns.Count == 0)
+                    {
+                        columns.Add(String.Empty);
+                        columns.Add(String.Empty);
+                    }
+                    else if (columns.Count == 1)
+                    {
+                        columns.Add(String.Empty);
+                    }
 
                     if (columns[0].Length > 0 || columns[1].Length > 0)
                     {
-                        switch (columns.Length)
+                        if (columns.Count > 1)
                         {
-                            case 0:
-                                break;
-                            case 1:
-                                //columns.Append(string.Empty);
-                                columns.Append("tom");
-                                columns.Append("tom2");
-                                break;
-                            case 2:
-                                // splitt second part
-                                var s = columns[1].Split(Separators, 2, StringSplitOptions.None);
-                                // check if second part has separators
-                                if (s.Length > 1)
-                                {
-                                    // if so set isManySeparatorTypeOfText = true
-                                    isManySeparatorTypeOfInputString = true;
-                                }
-                                break;
-                            default:
-                                break;
+                            // splitt second part
+                            var s = columns[1].Split(Separators, StringSplitOptions.TrimEntries);
+                            // check if second part has separators
+                            if (s.Length > 1)
+                            {
+                                // if so set isManySeparatorTypeOfText = true
+                                isManySeparatorTypeOfInputString = true;
+                            }
                         }
 
                         // format new textline
-                        TextLine tl;
-                        if (columns.Length > 1)
-                        {
-                            tl = new(columns[0], columns[1]);
-
-                        }
-                        else
-                        {
-                            tl = new(columns[0], String.Empty);
-                        }
-
+                        TextLine tl = new(columns[0], columns[1]);
                         // add textline to list
                         textLines.Add(tl);
                     }
@@ -106,29 +96,36 @@ namespace TextManipulationLibrary
             var report = new StringBuilder();
 
             // on each id gather multiple text strings 
+            bool isTheFirstTime = true;
             string currentId = string.Empty;
-            string newText = string.Empty;
             List<string> tempText = new();
             TextLine formatTextline;
             List<TextLine> tempTextLines = new();
 
             foreach (TextLine line in textLines)
             {
-                // alter text and put in temporary list
-                if (currentId != line.Id)
+                // don't add empty strings
+                if (line.Text != string.Empty)
                 {
-                    if (tempText.Count > 0)
+                    // alter text and put in temporary list
+                    if (isTheFirstTime || currentId != line.Id)
                     {
-                        formatTextline = new(currentId, String.Join(",", tempText));
-                        tempText = new();
-                        tempTextLines.Add(formatTextline);
+                        if (tempText.Count > 0)
+                        {
+                            formatTextline = new(currentId, String.Join(",", tempText));
+                            tempText = new();
+                            tempTextLines.Add(formatTextline);
+                        }
+                        currentId = line.Id;
+                        tempText.Add(line.Text.Trim());
+
+                        // not the first time anymore
+                        isTheFirstTime = false;
                     }
-                    currentId = line.Id;
-                    tempText.Add(line.Text.Trim());
-                }
-                else
-                {
-                    tempText.Add(line.Text.Trim());
+                    else
+                    {
+                        tempText.Add(line.Text.Trim());
+                    }
                 }
             }
 
@@ -162,13 +159,22 @@ namespace TextManipulationLibrary
 
             foreach (TextLine line in textLines)
             {
+                // Initiate list
+                List<string> stringList = new List<string>();
                 // split text part of textline into array
-                var stringArray = line.Text.Split(Separators, StringSplitOptions.TrimEntries);
+                stringList = line.Text.Split(Separators, StringSplitOptions.TrimEntries).ToList();
 
-                foreach (var s in stringArray)
+                // order the list
+                stringList = stringList
+                    .OrderBy(x => x)
+                    .Distinct()
+                    .ToList();
+
+                foreach (var s in stringList)
                 {
+                    // empty strings 
                     // Add line to report
-                    report.Append($"{line.Id.Trim()}\t{s.Trim()}");
+                    report.Append($"{line.Id.Trim()}\t{s.Trim()}{Environment.NewLine}");
                 }
             }
 
