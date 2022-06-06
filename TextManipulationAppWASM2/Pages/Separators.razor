@@ -1,0 +1,37 @@
+﻿@page "/separators"
+@layout MainLayout
+
+
+<PageTitle>One or Many Separators in Text</PageTitle>
+
+<h1>One or Many Separators in Text</h1>
+<p>
+    @*<input type="submit" @bind="InputValue" />*@
+    <h5><label for="input">Input text:</label></h5>
+<textarea id="input" rows="10" cols="60" placeholder="Input text here" @bind="InputValue"></textarea>
+</p>
+
+<p>
+    <h5><label for="output">Altered text:</label></h5>
+<textarea id="output" rows="10" cols="60" placeholder="Output text here">@OutputValue</textarea>
+</p>
+
+<button class="btn btn-primary" @onclick="ChangeText">Change text</button>
+
+@code {
+    @using TextManipulationLibrary
+
+
+    private string? InputValue { get; set; }
+    private string? OutputValue { get; set; }
+
+    // separators
+    char[] separators = new char[] { ',', ';', '\t' };
+
+    private void ChangeText()
+    {
+        ManageText mt = new(InputValue, separators);
+
+        OutputValue = mt.AddRowToList();
+    }
+}
