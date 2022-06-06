@@ -17,6 +17,8 @@
 <button class="btn btn-primary" @onclick="ChangeText">Change text</button>
 
 @code {
+    
+@using TextManipulationAppWASM
 
     private string? InputValue { get; set; }
     private string? OutputValue { get; set; }
@@ -28,6 +30,6 @@
     {
         ManageText mt = new(InputValue, separators);
 
-        OutputValue = mt.AddRowToList();
+        OutputValue = mt.GetModifiedText();
     }
 }

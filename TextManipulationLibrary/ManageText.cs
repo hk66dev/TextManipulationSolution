@@ -17,7 +17,7 @@ namespace TextManipulationLibrary
         private List<TextLine> textLines = new();
         bool isManySeparatorTypeOfInputString = false;
 
-        public string AddRowToList()
+        public string GetModifiedText()
         {
             //todo
             foreach (var line in GetNextLine(InputText))

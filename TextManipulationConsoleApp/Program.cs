@@ -23,4 +23,4 @@ sbInput.Append($"NA21A/ENGENG06\t120909-0909,110909-0909,100909-0909 {Environmen
 
 ManageText mt = new(sbInput.ToString(), separators);
 
-Console.WriteLine($"Output:{Environment.NewLine}{mt.AddRowToList()}");
+Console.WriteLine($"Output:{Environment.NewLine}{mt.GetModifiedText()}");
