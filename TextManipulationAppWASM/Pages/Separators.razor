@@ -1,8 +1,7 @@
 ﻿@page "/separators"
-@layout MainLayout
 
 
-<PageTitle>One or Many Separators in Text</PageTitle>
+<PageTitle>Modify text</PageTitle>
 
 <h1>One or Many Separators in Text</h1>
 <p>
@@ -19,8 +18,6 @@
 <button class="btn btn-primary" @onclick="ChangeText">Change text</button>
 
 @code {
-    @using TextManipulationLibrary
-
 
     private string? InputValue { get; set; }
     private string? OutputValue { get; set; }
