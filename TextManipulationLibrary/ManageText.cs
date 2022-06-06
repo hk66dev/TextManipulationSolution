@@ -25,7 +25,7 @@ namespace TextManipulationLibrary
                 if (line.Length > 0)
                 {
                     // Initiate list
-                    List<string> columns = new List<string>();
+                    List<string> columns = new();
                     // split line in two parts
                     columns = line.Split(Separators, 2, StringSplitOptions.TrimEntries).ToList();
 
