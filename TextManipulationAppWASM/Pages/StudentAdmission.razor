@@ -1,12 +1,12 @@
-﻿@page "/separators"
+﻿@page "/studentadmission"
 
-<PageTitle>Modify text</PageTitle>
+<PageTitle>Student admission</PageTitle>
 
-<h1>One or Many Separators in Text</h1>
+<h1>Student admission</h1>
 
 <h5><label for="input">Input text:</label></h5>
 <table>
-    <tr><textarea  @onfocus="CountNumberOfRows"  id="input" rows="10" cols="100" wrap="soft" placeholder="Input text here" @bind="InputValue" ></textarea></tr>
+    <tr><textarea @onfocus="CountNumberOfRows"  id="input" rows="10" cols="100" wrap="soft" placeholder="Input text here" @bind="InputValue" ></textarea></tr>
     <tr><lable for="input">Rows: @NumberOfInputRows</lable></tr>
 </table>
 
@@ -30,7 +30,7 @@
     char[] separators = new char[] { ',', ';', '\t' };
 
     private void ChangeText()
-    {
+    {        
         if (InputValue.Length > 0)
         {
             ManageText mt = new(InputValue, separators);

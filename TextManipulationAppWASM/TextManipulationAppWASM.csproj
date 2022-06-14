@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\StudentAdmissionLibrary\StudentAdmissionLibrary.csproj" />
     <ProjectReference Include="..\TextManipulationLibrary\TextManipulationLibrary.csproj" />
   </ItemGroup>
 

@@ -191,7 +191,7 @@ namespace TextManipulationLibrary
         {
             using (var reader = new StringReader(text))
             {
-                string s;
+                string? s;
                 while ((s = reader.ReadLine()) != null)
                 {
                     yield return s;
