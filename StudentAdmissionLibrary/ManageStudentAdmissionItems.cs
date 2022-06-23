@@ -32,23 +32,31 @@ namespace StudentAdmissionLibrary
             //}
 
 
-            //MatchCollection matchedPrograms = rg.Matches(authors);  
-            //string pattern = @"\b[M]\w+";  
-            string pattern = @"\b[0601]\w+";
-            Regex rx = new Regex(pattern, RegexOptions.IgnoreCase);
+            //MatchCollection matchedSSNs = rg.Matches(authors);  
+            string patternSSN = @"(\d{6}|\d{8})([-\s]?\d{4} )";  
+            string patternProgram = @"[A-Öa-ö, -]+program[A-Öa-ö -]+";
+            Regex rxSSN = new Regex(patternSSN, RegexOptions.IgnoreCase);
+            Regex rxProgram = new Regex(patternProgram, RegexOptions.IgnoreCase);
 
             //Match
-            MatchCollection matchedPrograms = rx.Matches(InputText);
-            
+            MatchCollection matchedSSNs = rxSSN.Matches(InputText);
+            MatchCollection matchedPrograms = rxProgram.Matches(InputText);
+
             StringBuilder sb = new StringBuilder();
 
-            for (int count = 0; count < matchedPrograms.Count; count++)
+            for (int count = 0; count < matchedSSNs.Count; count++)
             {
-                string s = matchedPrograms[count].Value;
-                sb.Append($"{s}{Environment.NewLine}");
+                string s = matchedSSNs[count].Value;
+                //sb.Append($"{s}{Environment.NewLine}");
+                sb.AppendLine(s);
             }
 
-            //int index = InputText.IndexOf("program");
+            foreach (Match program in matchedPrograms)
+            {
+                string s = program.Value;
+                sb.AppendLine(s);
+
+            }
 
             return sb.ToString();
    
