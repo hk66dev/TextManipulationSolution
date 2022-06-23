@@ -18,37 +18,38 @@ namespace StudentAdmissionLibrary
 
         public string GetStudentAdmissionItems()
         {
-            int startPositionProgram = 0;
-            int endPositionProgram = 0;
-
-
-
-            //CharEnumerator ce = InputText.GetEnumerator();     
-            //StringBuilder stringBuilder = new();
-            //while (ce.MoveNext()) 
-            //{
-            //    stringBuilder.Append(ce.Current);
-            //    string s = stringBuilder.ToString();                
-            //}
-
-
-            //MatchCollection matchedPrograms = rg.Matches(authors);  
-            //string pattern = @"\b[M]\w+";  
-            string pattern = @"\b[0601]\w+";
-            Regex rx = new Regex(pattern, RegexOptions.IgnoreCase);
+            //MatchCollection matchedSSNs = rg.Matches(authors);  
+            string patternSSN = @"(\d{6}|\d{8})([-\s]?\d{4} )";  
+            string patternProgram = @"[A-Öa-ö, -]+program[A-Öa-ö -]+";
+            Regex rxSSN = new Regex(patternSSN, RegexOptions.IgnoreCase);
+            Regex rxProgram = new Regex(patternProgram, RegexOptions.IgnoreCase);
+            Regex rxProgramSplit= new Regex(patternProgram, RegexOptions.IgnoreCase);
 
             //Match
-            MatchCollection matchedPrograms = rx.Matches(InputText);
-            
+            MatchCollection matchedSSNs = rxSSN.Matches(InputText);
+            MatchCollection matchedPrograms = rxProgram.Matches(InputText);
+            String[] subStrings = rxProgramSplit.Split(InputText);
+
             StringBuilder sb = new StringBuilder();
 
-            for (int count = 0; count < matchedPrograms.Count; count++)
+            foreach (string ss in subStrings)
             {
-                string s = matchedPrograms[count].Value;
-                sb.Append($"{s}{Environment.NewLine}");
+                sb.AppendLine(ss);
             }
 
-            //int index = InputText.IndexOf("program");
+            for (int count = 0; count < matchedSSNs.Count; count++)
+            {
+                string s = matchedSSNs[count].Value;
+                //sb.Append($"{s}{Environment.NewLine}");
+                sb.AppendLine(s);
+            }
+
+            foreach (Match program in matchedPrograms)
+            {
+                string s = program.Value;
+                sb.AppendLine(s);
+
+            }
 
             return sb.ToString();
    
