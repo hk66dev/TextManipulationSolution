@@ -19,11 +19,11 @@ namespace StudentAdmissionLibrary
         public string GetStudentAdmissionItems()
         {
             //MatchCollection matchedSSNs = rg.Matches(authors);  
-            string patternSSN = @"(\d{6}|\d{8})([-\s]?\d{4} )";  
+            string patternSSN = @"(\d{6}|\d{8})([-\s]?\d{4} )";
             string patternProgram = @"[A-Öa-ö, -]+program[A-Öa-ö -]+";
             Regex rxSSN = new Regex(patternSSN, RegexOptions.IgnoreCase);
             Regex rxProgram = new Regex(patternProgram, RegexOptions.IgnoreCase);
-            Regex rxProgramSplit= new Regex(patternProgram, RegexOptions.IgnoreCase);
+            Regex rxProgramSplit = new Regex(patternProgram, RegexOptions.IgnoreCase);
 
             //Match
             MatchCollection matchedSSNs = rxSSN.Matches(InputText);
@@ -32,27 +32,43 @@ namespace StudentAdmissionLibrary
 
             StringBuilder sb = new StringBuilder();
 
-            foreach (string ss in subStrings)
-            {
-                sb.AppendLine(ss);
-            }
-
-            for (int count = 0; count < matchedSSNs.Count; count++)
-            {
-                string s = matchedSSNs[count].Value;
-                //sb.Append($"{s}{Environment.NewLine}");
-                sb.AppendLine(s);
-            }
+            List<string> l = new();
 
             foreach (Match program in matchedPrograms)
             {
-                string s = program.Value;
-                sb.AppendLine(s);
 
+                string s = string.Empty;
+                s = program.Value;
+
+
+                l.AddRange(InputText.Split(",",StringSplitOptions.TrimEntries));
             }
 
+            foreach (string s in l)
+            {
+                sb.AppendLine(s);
+            }
+
+            //foreach (string ss in subStrings)
+            //{
+            //    sb.AppendLine(ss);
+            //}
+
+            //for (int count = 0; count < matchedSSNs.Count; count++)
+            //{
+            //    string s = matchedSSNs[count].Value;
+            //    //sb.Append($"{s}{Environment.NewLine}");
+            //    sb.AppendLine(s);
+            //}
+
+            //foreach (Match program in matchedPrograms)
+            //{
+            //    string s = program.Value;
+            //    sb.AppendLine(s);
+            //}
+
             return sb.ToString();
-   
+
         }
 
 
