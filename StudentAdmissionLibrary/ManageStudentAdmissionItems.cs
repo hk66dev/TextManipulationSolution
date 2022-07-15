@@ -19,35 +19,45 @@ namespace StudentAdmissionLibrary
         public string GetStudentAdmissionItems()
         {
             //MatchCollection matchedSSNs = rg.Matches(authors);  
-            string patternSSN = @"(\d{6}|\d{8})([-\s]?\d{4} )";
-            string patternProgram = @"[A-Öa-ö, -]+program[A-Öa-ö -]+";
-            Regex rxSSN = new Regex(patternSSN, RegexOptions.IgnoreCase);
-            Regex rxProgram = new Regex(patternProgram, RegexOptions.IgnoreCase);
-            Regex rxProgramSplit = new Regex(patternProgram, RegexOptions.IgnoreCase);
+            //string patternSSN = @"(\d{6}|\d{8})([-\s]?\d{4} )";
+            //string patternSSN = @"\d{6}|\d{8}[-\s]?\d{4} ";
+            string patternSSN = @"(\d{6}-\d{4} "","")";
+            // (\d{6})(-\d{4} )
+            // \d{6}-\d{4} 
+            //string patternProgram = @"[A-Öa-ö, -]+program[A-Öa-ö -]+";
+            Regex rxSSN = new Regex(patternSSN, RegexOptions.IgnorePatternWhitespace);
+            //Regex rxProgram = new Regex(patternProgram, RegexOptions.IgnoreCase);
+            //Regex rxProgramSplit = new Regex(patternProgram, RegexOptions.IgnoreCase);
 
             //Match
             MatchCollection matchedSSNs = rxSSN.Matches(InputText);
-            MatchCollection matchedPrograms = rxProgram.Matches(InputText);
-            String[] subStrings = rxProgramSplit.Split(InputText);
+            //MatchCollection matchedPrograms = rxProgram.Matches(InputText);
+            //String[] subStrings = rxProgramSplit.Split(InputText);
+            String[] ssSSN= rxSSN.Split(InputText);
 
             StringBuilder sb = new StringBuilder();
 
-            List<string> l = new();
+            //List<string> l = new();
 
-            foreach (Match program in matchedPrograms)
+            foreach (var item in ssSSN)
             {
-
-                string s = string.Empty;
-                s = program.Value;
-
-
-                l.AddRange(InputText.Split(",",StringSplitOptions.TrimEntries));
+                sb.AppendLine(item);
             }
 
-            foreach (string s in l)
-            {
-                sb.AppendLine(s);
-            }
+            //foreach (Match program in matchedPrograms)
+            //{
+
+            //    string s = string.Empty;
+            //    s = program.Value;
+
+
+            //    l.AddRange(InputText.Split(",",StringSplitOptions.TrimEntries));
+            //}
+
+            //foreach (string s in l)
+            //{
+            //    sb.AppendLine(s);
+            //}
 
             //foreach (string ss in subStrings)
             //{
@@ -60,6 +70,12 @@ namespace StudentAdmissionLibrary
             //    //sb.Append($"{s}{Environment.NewLine}");
             //    sb.AppendLine(s);
             //}
+
+            foreach (Match ssn in matchedSSNs)
+            {
+                string s = ssn.Value;
+                sb.AppendLine(s);
+            }
 
             //foreach (Match program in matchedPrograms)
             //{
