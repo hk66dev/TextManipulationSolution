@@ -21,7 +21,7 @@ namespace StudentAdmissionLibrary
         public string City { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
         public string MailAddress { get; set; } = string.Empty;
-        public int ChoiceRank { get; set; }
+        public int ChoiceRank { get; set; } = 0;
         public string AestheticChoice { get; set; } = string.Empty;
         public string Language11 { get; set; } = string.Empty;
         public string Language12 { get; set; } = string.Empty;
@@ -29,8 +29,8 @@ namespace StudentAdmissionLibrary
         public string IndividualChoice1 { get; set; } = string.Empty;
         public string MotherTongue { get; set; } = string.Empty;
         public string SwedishAsSecondLanguage { get; set; } = string.Empty;
-        public string Grades { get; set; } = string.Empty;
-        public string TestScore { get; set; } = string.Empty;
+        public double Grades { get; set; } = 0.0;
+        public double TestScore { get; set; } = 0.0;
         public string ProgramOrientation { get; set; } = string.Empty;
         public string AbsentRollCall { get; set; } = string.Empty;
         public string RollCallComment { get; set; } = string.Empty;
@@ -66,7 +66,7 @@ namespace StudentAdmissionLibrary
             string postalCode, string city, string phone, string mailAddress,
             int choiceRank, string aestheticChoice, string language11, string language12,
             string language22, string individualChoice1, string motherTongue,
-            string swedishAsSecondLanguage, string grades, string testScore,
+            string swedishAsSecondLanguage, double grades, double testScore,
             string programOrientation, string absentRollCall, string rollCallComment)
         {
             PersonNumber = personNumber;
@@ -117,8 +117,8 @@ namespace StudentAdmissionLibrary
             IndividualChoice1 = String.Empty;
             MotherTongue = String.Empty;
             SwedishAsSecondLanguage = String.Empty;
-            Grades = String.Empty;
-            TestScore = String.Empty;
+            Grades = 0.0;
+            TestScore = 0.0;
             ProgramOrientation = String.Empty;
             AbsentRollCall = String.Empty;
             RollCallComment = String.Empty;

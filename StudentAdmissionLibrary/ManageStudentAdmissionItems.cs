@@ -1,6 +1,10 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Globalization;
+using System.Net.Mail;
+using System.Net;
+using System.Numerics;
 
 namespace StudentAdmissionLibrary
 {
@@ -40,6 +44,8 @@ namespace StudentAdmissionLibrary
 
             //List<string> l = new();
 
+            List<StudentAdmissionItems> saiList = new();
+
             Regex rxSSN = new Regex(patternSSN, RegexOptions.IgnorePatternWhitespace);
 
             foreach (var (item, index) in ssSSN.Select((value, i) => (value, i)))
@@ -60,20 +66,19 @@ namespace StudentAdmissionLibrary
 
                     sb.AppendLine(sb2.ToString().Trim());
 
-
-                    StudentAdmissionItems sai = new StudentAdmissionItems();
+                    StudentAdmissionItems sai = new();
 
                     for (int i = 0; i < sSplit.Length; i++)
                     {
                         switch (i)
                         {
                             case 0:
-                                sai.PersonNumber = sSplit[i];
+                                sai.PersonNumber = sSplit[i].Trim();
                                 break;
                             case 1:
-                                int year = string.Empty;
-                                int month = string.Empty;
-                                int day = string.Empty;
+                                int year = 0;
+                                int month = 0;
+                                int day = 0;
 
                                 var dateParts = sSplit[i].Split('-');
 
@@ -127,14 +132,14 @@ namespace StudentAdmissionLibrary
                                     }
                                 }
 
-                                sai.FirstName = fName;
-                                sai.LastName = lName;
+                                sai.FirstName = fName.Trim();
+                                sai.LastName = lName.Trim();
                                 break;
                             case 3:
-                                sai.FormerSchool = sSplit[i];
+                                sai.FormerSchool = sSplit[i].Trim();
                                 break;
                             case 4:
-                                sai.Address = sSplit[i];
+                                sai.Address = sSplit[i].Trim();
                                 break;
                             case 5:
                                 string postalCode = string.Empty;
@@ -144,13 +149,95 @@ namespace StudentAdmissionLibrary
 
                                 var variousItems = sSplit[i].Split(' ');
 
-                                sai.PostalCode = postalCode;
-                                sai.City = sSplit[i];
-                                sai.Phone = sSplit[i];
-                                sai.MailAddress = sSplit[i];
+                                for (int j = 0; j < variousItems.Length; j++)
+                                {
+                                    switch (j)
+                                    {
+                                        case 0:
+                                            postalCode = variousItems[j];
+                                            break;
+                                        case 1:
+                                            city = variousItems[j];
+                                            break;
+                                        case 2:
+                                            phone = variousItems[j];
+                                            break;
+                                        case 3:
+                                            mail = variousItems[j];
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+
+                                sai.PostalCode = postalCode.Trim();
+                                sai.City = city.Trim();
+                                sai.Phone = phone.Trim();
+                                sai.MailAddress = mail.Trim();
                                 break;
                             case 6:
-                                sai.PersonNumber = sSplit[i];
+                                bool isChoisRankParsable = Int32.TryParse(sSplit[i], out int rank);
+
+                                if (isChoisRankParsable)
+                                {
+                                    sai.ChoiceRank = rank;
+                                }
+                                else
+                                {
+                                    sai.ChoiceRank = 0;
+                                }
+                                break;
+                            case 7:
+                                sai.AestheticChoice = sSplit[i].Trim();
+                                break;
+                            case 8:
+                                sai.Language11 = sSplit[i].Trim();
+                                break;
+                            case 9:
+                                sai.Language12 = sSplit[i].Trim();
+                                break;
+                            case 10:
+                                sai.Language22 = sSplit[i].Trim();
+                                break;
+                            case 11:
+                                sai.IndividualChoice1 = sSplit[i].Trim();
+                                break;
+                            case 12:
+                                sai.MotherTongue = sSplit[i].Trim();
+                                break;
+                            case 13:
+                                sai.SwedishAsSecondLanguage = sSplit[i].Trim();
+                                break;
+                            case 14:
+                                bool isGradesParsable = double.TryParse(sSplit[i], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out double grades);
+                                if (isGradesParsable)
+                                {
+                                    sai.Grades = grades;
+                                }
+                                else
+                                {
+                                    sai.Grades = 0.0;
+                                }
+                                break;
+                            case 15:
+                                bool isTestScoreParsable = double.TryParse(sSplit[i], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out double testScore);
+                                if (isTestScoreParsable)
+                                {
+                                    sai.TestScore = testScore;
+                                }
+                                else
+                                {
+                                    sai.TestScore = 0.0;
+                                }
+                                break;
+                            case 16:
+                                sai.ProgramOrientation = sSplit[i].Trim();
+                                break;
+                            case 17:
+                                sai.AbsentRollCall = sSplit[i].Trim();
+                                break;
+                            case 18:
+                                sai.RollCallComment = sSplit[i].Trim();
                                 break;
                             default:
                                 break;
@@ -158,7 +245,31 @@ namespace StudentAdmissionLibrary
 
                     }
 
+                    saiList.Add(sai);
+
                 }
+            }
+
+
+            string header =
+                "\nPersonNumber\tAdmissionDate\tFirstName\tLastName\tFormerSchool\tAddress\t" +
+                "PostalCode\tCity\tPhone\tMailAddress\tChoiceRank\tAestheticChoice\tLanguage11\t" +
+                "Language12\tLanguage22\tIndividualChoice1\tMotherTongue\tSwedishAsSecondLanguage\t" +
+                "Grades\tTestScore\tProgramOrientation\tAbsentRollCall\tRollCallComment";
+
+            sb.AppendLine(header);
+            foreach (var item in saiList)
+{
+                string s = 
+                    $"{item.PersonNumber}\t{item.AdmissionDate}\t{item.FirstName}\t{item.LastName}\t" +
+                    $"{item.FormerSchool}\t{item.Address}\t{item.PostalCode}\t{item.City}\t{item.Phone}\t" +
+                    $"{item.MailAddress}\t{item.ChoiceRank}\t{item.AestheticChoice}\t{item.Language11}\t" +
+                    $"{item.Language12}\t{item.Language22}\t{item.IndividualChoice1}\t{item.MotherTongue}\t" +
+                    $"{item.SwedishAsSecondLanguage}\t{item.Grades}\t{item.TestScore}\t{item.ProgramOrientation}\t" +
+                    $"{item.AbsentRollCall}\t{item.RollCallComment}";
+
+                sb.AppendLine(s); 
+
             }
 
             //foreach (var item in ssSSN)
