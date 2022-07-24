@@ -25,14 +25,23 @@ namespace StudentAdmissionLibrary
             //MatchCollection matchedSSNs = rg.Matches(authors);  
             //string patternSSN = @"(\d{6}|\d{8})([-\s]?\d{4} )";
             //string patternSSN = @"\d{6}|\d{8}[-\s]?\d{4} ";
+
             string patternSSN = @"(\d{6}-\d{4})";
-            string patternProgram = @"([A-Öa-ö, -]+program[A-Öa-ö -]+)";
-            string pattern = $"{patternSSN}|{patternProgram}";
+            //string patternP1 = @"([A-Öa-ö, -]+program[A-Öa-ö -]+)";
+            string patternP1 = @"[a-öA-Ö, -]+program[a-öA-Ö, -]+";
+            string patternP2 = @"Gymnas[ie]+särskola-[a-öA-Ö, -]+";
+            string patternP3 = @"[a-öA-Ö, -]+alternativ";
+            string patternP4 = @"[a-öA-Ö, -]+introdukti[a-öA-Ö, -]+";
+            string patternP5 = @"Startar ej[a-öA-Ö0-9, -:]+";
+            string patternP6 = @"[a-öA-Ö, -]+högrehandsval /[a-öA-Ö, -]+";
+
+            string pattern = $"{patternSSN}|{patternP1}|{patternP2}|{patternP3}|{patternP4}|{patternP5}|{patternP6}";
+            //string pattern = $"{patternSSN}|{patternP3}";
 
             //string pattern = @"(\d{6}-\d{4} )|([A-Öa-ö, -]+program[A-Öa-ö -]+)";
             Regex rx = new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
-            //Regex rxProgram = new Regex(patternProgram, RegexOptions.IgnoreCase);
-            //Regex rxProgramSplit = new Regex(patternProgram, RegexOptions.IgnoreCase);
+            //Regex rxProgram = new Regex(patternP1, RegexOptions.IgnoreCase);
+            //Regex rxProgramSplit = new Regex(patternP1, RegexOptions.IgnoreCase);
 
             //Match
             //MatchCollection matched = rx.Matches(InputText);
@@ -76,43 +85,59 @@ namespace StudentAdmissionLibrary
                                 sai.PersonNumber = sSplit[i].Trim();
                                 break;
                             case 1:
-                                int year = 0;
-                                int month = 0;
-                                int day = 0;
+                                Regex rxDate = new(@"\d{4}-\d{2}-\d{2}");
+                                bool isDate = rxDate.IsMatch(sSplit[i].Trim());
 
-                                var dateParts = sSplit[i].Split('-');
-
-                                for (int j = 0; j < dateParts.Length; j++)
+                                if (rxDate.IsMatch(sSplit[i].Trim()))
                                 {
-                                    switch (j)
+
+                                    try
                                     {
-                                        case 0:
-                                            bool isYearParsable = Int32.TryParse(dateParts[j], out year);
-                                            if (!isYearParsable)
+                                        int year = 0;
+                                        int month = 0;
+                                        int day = 0;
+
+                                        var dateParts = sSplit[i].Split('-');
+
+                                        for (int j = 0; j < dateParts.Length; j++)
+                                        {
+                                            switch (j)
                                             {
-                                                year = 1800;
+                                                case 0:
+                                                    bool isYearParsable = Int32.TryParse(dateParts[j], out year);
+                                                    if (!isYearParsable)
+                                                    {
+                                                        year = 1800;
+                                                    }
+                                                    break;
+                                                case 1:
+                                                    bool isMonthParsable = Int32.TryParse(dateParts[j], out month);
+                                                    if (!isMonthParsable)
+                                                    {
+                                                        month = 1;
+                                                    }
+                                                    break;
+                                                case 2:
+                                                    bool isDayParsable = Int32.TryParse(dateParts[j], out day);
+                                                    if (!isDayParsable)
+                                                    {
+                                                        day = 1;
+                                                    }
+                                                    break;
+                                                default:
+                                                    break;
                                             }
-                                            break;
-                                        case 1:
-                                            bool isMonthParsable = Int32.TryParse(dateParts[j],out month);
-                                            if (!isMonthParsable)
-                                            {
-                                                month = 1;
-                                            }
-                                            break;
-                                        case 2:
-                                            bool isDayParsable = Int32.TryParse(dateParts[j],out day);
-                                            if (!isDayParsable)
-                                            {
-                                                day = 1;
-                                            }
-                                            break;
-                                        default:
-                                            break;
+                                        }
+
+                                        sai.AdmissionDate = new DateOnly(year, month, day);
+
+
+                                    }
+                                    catch (Exception)
+                                    {
+                                        throw;
                                     }
                                 }
-
-                                sai.AdmissionDate = new DateOnly(year,month,day);
                                 break;
                             case 2:
                                 string fName = string.Empty;
@@ -147,32 +172,61 @@ namespace StudentAdmissionLibrary
                                 string phone = string.Empty;
                                 string mail = string.Empty;
 
-                                var variousItems = sSplit[i].Split(' ');
+                                var variousItems = sSplit[i].Split("  ");
 
                                 for (int j = 0; j < variousItems.Length; j++)
                                 {
                                     switch (j)
                                     {
                                         case 0:
-                                            postalCode = variousItems[j];
+                                            // Get postalcode and city
+                                            string patternPostalCodeCity = @"\d{3}\s\d{2}\s|[a-zA-Z- åäöÅÄÖ]+";
+                                            Regex rxPostalCodeCity = new(patternPostalCodeCity);
+                                            MatchCollection matchPostalCodeCity = rxPostalCodeCity.Matches(variousItems[j]);
+                                            for (int indexPostalCodeCity = 0; indexPostalCodeCity < matchPostalCodeCity.Count; indexPostalCodeCity++)
+                                            {
+                                                switch (indexPostalCodeCity)
+                                                {
+                                                    case 0:
+                                                        postalCode = matchPostalCodeCity[indexPostalCodeCity].Value;
+                                                        break;
+                                                    case 1:
+                                                        city = matchPostalCodeCity[1].Value;
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
+                                            }
                                             break;
                                         case 1:
-                                            city = variousItems[j];
+                                            if (variousItems[j].Contains('@'))
+                                            {
+                                                phone = string.Empty;
+                                                mail = variousItems[j];
+                                            }
+                                            else
+                                            {
+                                                phone = variousItems[j];
+                                            }
                                             break;
                                         case 2:
-                                            phone = variousItems[j];
-                                            break;
-                                        case 3:
                                             mail = variousItems[j];
                                             break;
                                         default:
                                             break;
                                     }
                                 }
-
                                 sai.PostalCode = postalCode.Trim();
                                 sai.City = city.Trim();
-                                sai.Phone = phone.Trim();
+
+                                if (phone.StartsWith('0') | phone.StartsWith('+'))
+                                {
+                                    sai.Phone = phone.Trim();
+                                }
+                                else
+                                {
+                                    sai.Phone = $"0{phone.Trim()}";
+                                }
                                 sai.MailAddress = mail.Trim();
                                 break;
                             case 6:
@@ -259,8 +313,8 @@ namespace StudentAdmissionLibrary
 
             sb.AppendLine(header);
             foreach (var item in saiList)
-{
-                string s = 
+            {
+                string s =
                     $"{item.PersonNumber}\t{item.AdmissionDate}\t{item.FirstName}\t{item.LastName}\t" +
                     $"{item.FormerSchool}\t{item.Address}\t{item.PostalCode}\t{item.City}\t{item.Phone}\t" +
                     $"{item.MailAddress}\t{item.ChoiceRank}\t{item.AestheticChoice}\t{item.Language11}\t" +
@@ -268,7 +322,7 @@ namespace StudentAdmissionLibrary
                     $"{item.SwedishAsSecondLanguage}\t{item.Grades}\t{item.TestScore}\t{item.ProgramOrientation}\t" +
                     $"{item.AbsentRollCall}\t{item.RollCallComment}";
 
-                sb.AppendLine(s); 
+                sb.AppendLine(s);
 
             }
 
