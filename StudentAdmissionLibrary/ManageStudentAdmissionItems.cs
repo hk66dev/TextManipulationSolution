@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Net.Mail;
 using System.Net;
 using System.Numerics;
+using System.Linq;
 
 namespace StudentAdmissionLibrary
 {
@@ -15,78 +16,53 @@ namespace StudentAdmissionLibrary
         public ManageStudentAdmissionItems(string inputText)
         {
             InputText = inputText;
-
         }
-
-        //private List<StudentAdmissionItems> studentAdmissionItems = new();
 
         public string GetStudentAdmissionItems()
         {
-            //MatchCollection matchedSSNs = rg.Matches(authors);  
-            //string patternSSN = @"(\d{6}|\d{8})([-\s]?\d{4} )";
-            //string patternSSN = @"\d{6}|\d{8}[-\s]?\d{4} ";
-
-            string patternSSN = @"(\d{6}-\d{4})";
-            //string patternP1 = @"([A-Öa-ö, -]+program[A-Öa-ö -]+)";
-            string patternP1 = @"[a-öA-Ö, -]+program[a-öA-Ö, -]+";
-            string patternP2 = @"Gymnas[ie]+särskola-[a-öA-Ö, -]+";
-            string patternP3 = @"[a-öA-Ö, -]+alternativ";
-            string patternP4 = @"[a-öA-Ö, -]+introdukti[a-öA-Ö, -]+";
-            string patternP5 = @"Startar ej[a-öA-Ö0-9, -:]+";
-            string patternP6 = @"[a-öA-Ö, -]+högrehandsval /[a-öA-Ö, -]+";
-
+            // build regex pattern used to split input
+            string patternSSN = @"(\d{6}-\w{2}\d{2})";
+            string patternP1 = @"[\w, -]+program[\w, -]+";
+            string patternP2 = @"Gymnas[ie]+särskola-[\w, -]+";
+            string patternP3 = @"[\w, -]+alternativ";
+            string patternP4 = @"[\w, -]+introduktion[\w, -]*";
+            string patternP5 = @"Startar ej[\w, :-]+";
+            string patternP6 = @"[\w, -]+högrehandsval[\w, /-]+";
             string pattern = $"{patternSSN}|{patternP1}|{patternP2}|{patternP3}|{patternP4}|{patternP5}|{patternP6}";
-            //string pattern = $"{patternSSN}|{patternP3}";
+            Regex rx = new(pattern, RegexOptions.None);
 
-            //string pattern = @"(\d{6}-\d{4} )|([A-Öa-ö, -]+program[A-Öa-ö -]+)";
-            Regex rx = new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
-            //Regex rxProgram = new Regex(patternP1, RegexOptions.IgnoreCase);
-            //Regex rxProgramSplit = new Regex(patternP1, RegexOptions.IgnoreCase);
-
-            //Match
-            //MatchCollection matched = rx.Matches(InputText);
-            //MatchCollection matchedPrograms = rxProgram.Matches(InputText);
-            //String[] subStrings = rxProgramSplit.Split(InputText);
+            //Split at swedish social security number
             String[] ssSSN = rx.Split(InputText);
 
-            StringBuilder sb = new StringBuilder();
+            // student list with their choice
+            List<StudentAdmissionItems> studentAdmissionItems = new();
 
-            //List<string> l = new();
+            Regex rxSSN = new(patternSSN, RegexOptions.IgnorePatternWhitespace);
 
-            List<StudentAdmissionItems> saiList = new();
-
-            Regex rxSSN = new Regex(patternSSN, RegexOptions.IgnorePatternWhitespace);
-
+            // the lamda expression is used to get an index
+            // the index is used to join two rows when a swedish social security number 
+            // is found on one row
             foreach (var (item, index) in ssSSN.Select((value, i) => (value, i)))
             {
+                // when swedish social security number is fond
                 if (rxSSN.IsMatch(item))
                 {
                     string s = $"{item.Trim()}{ssSSN[index + 1].Trim()}";
-                    sb.AppendLine(s);
-                    var delimiters = new string[] { "\",\"", "" };
-                    var sSplit = s.Split(delimiters, StringSplitOptions.TrimEntries);
+                    var delimiters = new string[] { "\",\"", "" }; // delimiters "," and ""
+                    //var sSplit = s.Split(delimiters, StringSplitOptions.TrimEntries); // split to get substrings
+                    var sSplit = s.Split(delimiters, StringSplitOptions.None); // split to get substrings
 
-
-                    StringBuilder sb2 = new StringBuilder();
-                    foreach (var subItem in sSplit)
-                    {
-                        sb2.Append($"{subItem.Trim()},");
-                    }
-
-                    sb.AppendLine(sb2.ToString().Trim());
-
-                    StudentAdmissionItems sai = new();
+                    StudentAdmissionItems studentAdmissionItem = new();
 
                     for (int i = 0; i < sSplit.Length; i++)
                     {
                         switch (i)
                         {
                             case 0:
-                                sai.PersonNumber = sSplit[i].Trim();
+                                studentAdmissionItem.PersonNumber = sSplit[i].Trim();
                                 break;
                             case 1:
-                                Regex rxDate = new(@"\d{4}-\d{2}-\d{2}");
-                                bool isDate = rxDate.IsMatch(sSplit[i].Trim());
+                                Regex rxDate = new(@"(\d{4}-\d{2}-\d{2})");
 
                                 if (rxDate.IsMatch(sSplit[i].Trim()))
                                 {
@@ -129,7 +105,7 @@ namespace StudentAdmissionLibrary
                                             }
                                         }
 
-                                        sai.AdmissionDate = new DateOnly(year, month, day);
+                                        studentAdmissionItem.AdmissionDate = new DateOnly(year, month, day);
 
 
                                     }
@@ -157,141 +133,206 @@ namespace StudentAdmissionLibrary
                                     }
                                 }
 
-                                sai.FirstName = fName.Trim();
-                                sai.LastName = lName.Trim();
+                                studentAdmissionItem.FirstName = fName.Trim();
+                                studentAdmissionItem.LastName = lName.Trim();
                                 break;
                             case 3:
-                                sai.FormerSchool = sSplit[i].Trim();
+                                // check if string starts with a 0 or the string only contains digits
+                                // if it's the case append "xx" at the end of string
+                                bool isFormerSchoolOnlyDigits = sSplit[i].Trim().All(char.IsDigit);
+                                if (sSplit[i].StartsWith('0') || isFormerSchoolOnlyDigits)
+                                {
+                                    studentAdmissionItem.FormerSchool = $"{sSplit[i].Trim()}xx";
+                                }
+                                else
+                                {
+                                    studentAdmissionItem.FormerSchool = sSplit[i].Trim();
+                                }
                                 break;
                             case 4:
-                                sai.Address = sSplit[i].Trim();
+                                studentAdmissionItem.Address = sSplit[i].Trim();
                                 break;
                             case 5:
+                                // switch "  " (double spaces) to "\t" (tabular)
+                                // to make regex easier
+                                Regex rxSwitchDoubleSpace = new("  ", RegexOptions.None);
+                                string strVariousItems = rxSwitchDoubleSpace.Replace(sSplit[i], " \t ");
+
+                                // initiate temporaty strings
                                 string postalCode = string.Empty;
                                 string city = string.Empty;
                                 string phone = string.Empty;
                                 string mail = string.Empty;
 
-                                var variousItems = sSplit[i].Split("  ");
+                                // build regex pattern
+                                string patternPostalCode = @"^\d{3} \d{2}";
+                                string patternCity = @"[a-öA-Ö]+[ -]*[a-öA-Ö]* ";
+                                string patternPhone = @"\d{2}[\d -]{6,10}\d|\+\d{2} ?\d[\d -]{7,10}\d";
+                                string patternMail = @"[a-öA-Ö0-9.-]+@[a-zA-Z.-]+\.[a-zA-Z]{2,6}";
 
-                                for (int j = 0; j < variousItems.Length; j++)
+                                // get matches
+                                string patternVariousItems = $"{patternPostalCode}|{patternCity}|{patternPhone}|{patternMail}";
+                                Regex rxVariousItems = new(patternVariousItems, RegexOptions.None);
+                                MatchCollection matchVariousItems = rxVariousItems.Matches(strVariousItems);
+
+
+                                // hkl: Endast för test
+                                List<string> aList = new();
+
+                                foreach (var match in matchVariousItems.OfType<Match>())
                                 {
-                                    switch (j)
+                                    aList.Add(match.Value);
+                                }
+                                string a = string.Empty;
+                                // hkl: End Endast för test
+
+
+                                // step through matches 
+                                foreach (var match in matchVariousItems.OfType<Match>())
+                                {
+                                    // check matches and copy to correct class field
+                                    Regex rxPostalCode = new(patternPostalCode);
+                                    Regex rxCity = new(patternCity);
+                                    Regex rxPhone = new(patternPhone);
+                                    Regex rxMail = new(patternMail);
+                                    if (rxPostalCode.IsMatch(match.Value) && match.Length <= 6)
                                     {
-                                        case 0:
-                                            // Get postalcode and city
-                                            string patternPostalCodeCity = @"\d{3}\s\d{2}\s|[a-zA-Z- åäöÅÄÖ]+";
-                                            Regex rxPostalCodeCity = new(patternPostalCodeCity);
-                                            MatchCollection matchPostalCodeCity = rxPostalCodeCity.Matches(variousItems[j]);
-                                            for (int indexPostalCodeCity = 0; indexPostalCodeCity < matchPostalCodeCity.Count; indexPostalCodeCity++)
-                                            {
-                                                switch (indexPostalCodeCity)
-                                                {
-                                                    case 0:
-                                                        postalCode = matchPostalCodeCity[indexPostalCodeCity].Value;
-                                                        break;
-                                                    case 1:
-                                                        city = matchPostalCodeCity[1].Value;
-                                                        break;
-                                                    default:
-                                                        break;
-                                                }
-                                            }
-                                            break;
-                                        case 1:
-                                            if (variousItems[j].Contains('@'))
-                                            {
-                                                phone = string.Empty;
-                                                mail = variousItems[j];
-                                            }
-                                            else
-                                            {
-                                                phone = variousItems[j];
-                                            }
-                                            break;
-                                        case 2:
-                                            mail = variousItems[j];
-                                            break;
-                                        default:
-                                            break;
+                                        postalCode = match.Value;
+                                    }
+                                    else if (rxCity.IsMatch(match.Value) && !match.Value.Contains('@')) // match city but not mail
+                                    {
+                                        city = match.Value;
+                                    }
+                                    else if (rxPhone.IsMatch(match.Value) && match.Length >= 9)
+                                    {
+                                        phone = match.Value;
+                                    }
+                                    else if (rxMail.IsMatch(match.Value))
+                                    {
+                                        mail = match.Value;
                                     }
                                 }
-                                sai.PostalCode = postalCode.Trim();
-                                sai.City = city.Trim();
 
-                                if (phone.StartsWith('0') | phone.StartsWith('+'))
+                                // copy to correct field
+                                studentAdmissionItem.PostalCode = postalCode.Trim();
+                                studentAdmissionItem.City = city.Trim();
+
+                                // check and adjust phone number
+                                if (phone.Length > 0)
                                 {
-                                    sai.Phone = phone.Trim();
+                                    // temporary phone string while configuring phone number
+                                    string tmpPhone = string.Empty;
+
+                                    if (phone.StartsWith('0') | phone.StartsWith('+'))
+                                    {
+                                        tmpPhone = phone.Trim();
+                                    }
+                                    else
+                                    {
+                                        tmpPhone = $"0{phone.Trim()}";
+                                    }
+
+                                    // check for '-'
+                                    if (tmpPhone.Contains('-'))
+                                    {
+                                        studentAdmissionItem.Phone = tmpPhone.Trim();
+                                    }
+                                    else
+                                    {
+                                        // remove all whitespace characters from string
+                                        string tmpTrimmedPhone = String.Concat(tmpPhone.Where(c => !Char.IsWhiteSpace(c)));
+
+                                        // check if phone number only contains digits
+                                        // insert "-" as character three if so
+                                        bool isPhoneOnlyDigits = tmpTrimmedPhone.All(char.IsDigit);
+                                        if (isPhoneOnlyDigits)
+                                        {
+                                            //String.Format("{0:(###) ###-####}", 8005551212);
+                                            if(tmpTrimmedPhone.Length == 9)
+                                            {
+                                                studentAdmissionItem.Phone = String.Format("{0:000-## ## ##}", Convert.ToInt64(tmpTrimmedPhone));
+                                            }
+                                            else if (tmpTrimmedPhone.Length == 10)
+                                            {
+                                                studentAdmissionItem.Phone = String.Format("{0:000-### ## ##}", Convert.ToInt64(tmpTrimmedPhone));
+                                            }
+                                            else if (tmpTrimmedPhone.Length == 11)
+                                            {
+                                                studentAdmissionItem.Phone = String.Format("{0:000-### ### ##}", Convert.ToInt64(tmpTrimmedPhone));
+                                            }
+                                            
+                                        }
+                                        else
+                                        {
+                                            studentAdmissionItem.Phone = tmpPhone.Trim();
+                                        }
+                                    }
                                 }
-                                else
-                                {
-                                    sai.Phone = $"0{phone.Trim()}";
-                                }
-                                sai.MailAddress = mail.Trim();
+                                studentAdmissionItem.MailAddress = mail.Trim();
                                 break;
                             case 6:
                                 bool isChoisRankParsable = Int32.TryParse(sSplit[i], out int rank);
 
                                 if (isChoisRankParsable)
                                 {
-                                    sai.ChoiceRank = rank;
+                                    studentAdmissionItem.ChoiceRank = rank;
                                 }
                                 else
                                 {
-                                    sai.ChoiceRank = 0;
+                                    studentAdmissionItem.ChoiceRank = 0;
                                 }
                                 break;
                             case 7:
-                                sai.AestheticChoice = sSplit[i].Trim();
+                                studentAdmissionItem.AestheticChoice = sSplit[i].Trim();
                                 break;
                             case 8:
-                                sai.Language11 = sSplit[i].Trim();
+                                studentAdmissionItem.Language11 = sSplit[i].Trim();
                                 break;
                             case 9:
-                                sai.Language12 = sSplit[i].Trim();
+                                studentAdmissionItem.Language12 = sSplit[i].Trim();
                                 break;
                             case 10:
-                                sai.Language22 = sSplit[i].Trim();
+                                studentAdmissionItem.Language22 = sSplit[i].Trim();
                                 break;
                             case 11:
-                                sai.IndividualChoice1 = sSplit[i].Trim();
+                                studentAdmissionItem.IndividualChoice1 = sSplit[i].Trim();
                                 break;
                             case 12:
-                                sai.MotherTongue = sSplit[i].Trim();
+                                studentAdmissionItem.MotherTongue = sSplit[i].Trim();
                                 break;
                             case 13:
-                                sai.SwedishAsSecondLanguage = sSplit[i].Trim();
+                                studentAdmissionItem.SwedishAsSecondLanguage = sSplit[i].Trim();
                                 break;
                             case 14:
                                 bool isGradesParsable = double.TryParse(sSplit[i], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out double grades);
                                 if (isGradesParsable)
                                 {
-                                    sai.Grades = grades;
+                                    studentAdmissionItem.Grades = grades;
                                 }
                                 else
                                 {
-                                    sai.Grades = 0.0;
+                                    studentAdmissionItem.Grades = 0.0;
                                 }
                                 break;
                             case 15:
                                 bool isTestScoreParsable = double.TryParse(sSplit[i], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out double testScore);
                                 if (isTestScoreParsable)
                                 {
-                                    sai.TestScore = testScore;
+                                    studentAdmissionItem.TestScore = testScore;
                                 }
                                 else
                                 {
-                                    sai.TestScore = 0.0;
+                                    studentAdmissionItem.TestScore = 0.0;
                                 }
                                 break;
                             case 16:
-                                sai.ProgramOrientation = sSplit[i].Trim();
+                                studentAdmissionItem.ProgramOrientation = sSplit[i].Trim();
                                 break;
                             case 17:
-                                sai.AbsentRollCall = sSplit[i].Trim();
+                                studentAdmissionItem.AbsentRollCall = sSplit[i].Trim();
                                 break;
                             case 18:
-                                sai.RollCallComment = sSplit[i].Trim();
+                                studentAdmissionItem.RollCallComment = sSplit[i].Trim();
                                 break;
                             default:
                                 break;
@@ -299,20 +340,22 @@ namespace StudentAdmissionLibrary
 
                     }
 
-                    saiList.Add(sai);
-
+                    studentAdmissionItems.Add(studentAdmissionItem);
                 }
             }
 
+            // put together the output string,
+            // header and rows from the list
+            StringBuilder output = new();
 
             string header =
-                "\nPersonNumber\tAdmissionDate\tFirstName\tLastName\tFormerSchool\tAddress\t" +
+                "PersonNumber\tAdmissionDate\tFirstName\tLastName\tFormerSchool\tAddress\t" +
                 "PostalCode\tCity\tPhone\tMailAddress\tChoiceRank\tAestheticChoice\tLanguage11\t" +
                 "Language12\tLanguage22\tIndividualChoice1\tMotherTongue\tSwedishAsSecondLanguage\t" +
                 "Grades\tTestScore\tProgramOrientation\tAbsentRollCall\tRollCallComment";
+            output.AppendLine(header);
 
-            sb.AppendLine(header);
-            foreach (var item in saiList)
+            foreach (var item in studentAdmissionItems)
             {
                 string s =
                     $"{item.PersonNumber}\t{item.AdmissionDate}\t{item.FirstName}\t{item.LastName}\t" +
@@ -322,58 +365,10 @@ namespace StudentAdmissionLibrary
                     $"{item.SwedishAsSecondLanguage}\t{item.Grades}\t{item.TestScore}\t{item.ProgramOrientation}\t" +
                     $"{item.AbsentRollCall}\t{item.RollCallComment}";
 
-                sb.AppendLine(s);
-
+                output.AppendLine(s);
             }
 
-            //foreach (var item in ssSSN)
-            //{
-            //    if (rxSSN.IsMatch(item))
-            //    {
-            //        sb.AppendLine(item);
-            //    }
-            //}
-
-            //foreach (Match program in matchedPrograms)
-            //{
-
-            //    string s = string.Empty;
-            //    s = program.Value;
-
-
-            //    l.AddRange(InputText.Split(",",StringSplitOptions.TrimEntries));
-            //}
-
-            //foreach (string s in l)
-            //{
-            //    sb.AppendLine(s);
-            //}
-
-            //foreach (string ss in subStrings)
-            //{
-            //    sb.AppendLine(ss);
-            //}
-
-            //for (int count = 0; count < matchedSSNs.Count; count++)
-            //{
-            //    string s = matchedSSNs[count].Value;
-            //    //sb.Append($"{s}{Environment.NewLine}");
-            //    sb.AppendLine(s);
-            //}
-
-            //foreach (Match ssn in matched)
-            //{
-            //    string s = ssn.Value;
-            //    sb.AppendLine(s);
-            //}
-
-            //foreach (Match program in matchedPrograms)
-            //{
-            //    string s = program.Value;
-            //    sb.AppendLine(s);
-            //}
-
-            return sb.ToString();
+            return output.ToString();
 
         }
 

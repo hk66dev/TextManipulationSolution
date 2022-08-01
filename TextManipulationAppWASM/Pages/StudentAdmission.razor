@@ -6,13 +6,13 @@
 
 <h5><label for="input">Input text:</label></h5>
 <table>
-    <tr><textarea @onfocus="CountNumberOfRows"  id="input" rows="10" cols="100" wrap="soft" placeholder="Input text here" @bind="InputValue" ></textarea></tr>
+    <tr><textarea @onfocus="CountNumberOfRows"  id="input" rows="8" cols="100" wrap="soft" placeholder="Input text here" @bind="InputValue" ></textarea></tr>
     <tr><lable for="input">Rows: @NumberOfInputRows</lable></tr>
 </table>
 
 <h5><label for="output">Changed text:</label></h5>
 <table>
-    <tr><textarea @onfocus="CountNumberOfRows" id="output" rows="10" cols="100" wrap="hard" placeholder="Output text here" @bind="OutputValue"></textarea></tr>
+    <tr><textarea @onfocus="CountNumberOfRows" id="output" rows="8" cols="100" wrap="hard" placeholder="Output text here" @bind="OutputValue"></textarea></tr>
     <tr><lable for="output">Rows: @NumberOfOutputRows</lable></tr>
 </table>
 
@@ -26,15 +26,12 @@
     public int NumberOfInputRows { get; set; }
     public int NumberOfOutputRows { get; set; }
 
-    // separators
-    //char[] separators = new char[] { ',', ';', '\t' };
-
     private void ChangeText()
     {        
         if (InputValue.Length > 0)
         {
             ManageStudentAdmissionItems manage = new(InputValue);
-            OutputValue = manage.GetStudentAdmissionItems();
+            OutputValue = manage.GetStudentAdmissionItems().ToString();
         }
         else
         {
