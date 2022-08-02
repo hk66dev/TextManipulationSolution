@@ -6,19 +6,32 @@ using System.Net.Mail;
 using System.Net;
 using System.Numerics;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace StudentAdmissionLibrary
 {
     public class ManageStudentAdmissionItems
     {
         public string InputText { get; }
+        public string OutputText { get; private set; }
+        public List<StudentAdmissionItems> StudentAdmissionItemsList { get; set; }  
 
+        // hkl: lägg till properties
+        // Student admission items list property
+
+
+
+
+        // constructor
         public ManageStudentAdmissionItems(string inputText)
         {
             InputText = inputText;
+            OutputText = GetStudentAdmissionItemsString();
+            StudentAdmissionItemsList = GetStudentAdmissionItemsList();
+            //StudentAdmissionItemsList = new List<StudentAdmissionItems>();
         }
 
-        public string GetStudentAdmissionItems()
+        public List<StudentAdmissionItems> GetStudentAdmissionItemsList()
         {
             // build regex pattern used to split input
             string patternSSN = @"(\d{6}-\w{2}\d{2})";
@@ -344,6 +357,11 @@ namespace StudentAdmissionLibrary
                 }
             }
 
+            return studentAdmissionItems;
+        }
+
+        public string GetStudentAdmissionItemsString()
+        {
             // put together the output string,
             // header and rows from the list
             StringBuilder output = new();
@@ -355,7 +373,7 @@ namespace StudentAdmissionLibrary
                 "Grades\tTestScore\tProgramOrientation\tAbsentRollCall\tRollCallComment";
             output.AppendLine(header);
 
-            foreach (var item in studentAdmissionItems)
+            foreach (var item in GetStudentAdmissionItemsList())
             {
                 string s =
                     $"{item.PersonNumber}\t{item.AdmissionDate}\t{item.FirstName}\t{item.LastName}\t" +
@@ -369,21 +387,15 @@ namespace StudentAdmissionLibrary
             }
 
             return output.ToString();
-
         }
 
-
-
-
-        //DateOnly date;
-        //if (DateOnly.TryParse(admissionDate, out date))
-        //{
-        //    AdmissionDate = date;
-        //}
-        //else
-        //{
-        //    AdmissionDate = new DateOnly(DateTime.Now);
-        //}
-
+        /// <summary>
+        /// Overrides ToString().
+        /// </summary>
+        /// <returns>String of student admission items from list, header and rows.</returns>
+        public override string ToString()
+        {
+            return GetStudentAdmissionItemsString();
+        }
     }
 }

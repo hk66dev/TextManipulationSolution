@@ -31,7 +31,10 @@
         if (InputValue.Length > 0)
         {
             ManageStudentAdmissionItems manage = new(InputValue);
-            OutputValue = manage.GetStudentAdmissionItems().ToString();
+            //OutputValue = manage.GetStudentAdmissionItemsList().ToString();            
+            OutputValue = manage.OutputText;
+
+
         }
         else
         {

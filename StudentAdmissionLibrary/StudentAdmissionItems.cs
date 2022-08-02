@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace StudentAdmissionLibrary
 {
-    internal class StudentAdmissionItems
+    public class StudentAdmissionItems
     {
         public string PersonNumber { get; set; } = string.Empty;
         public DateOnly AdmissionDate { get; set; }
