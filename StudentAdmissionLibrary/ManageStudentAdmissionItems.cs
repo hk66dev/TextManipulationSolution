@@ -14,7 +14,7 @@ namespace StudentAdmissionLibrary
     {
         public string InputText { get; }
         public string OutputText { get; private set; }
-        public List<StudentAdmissionItems> StudentAdmissionItemsList { get; set; }  
+        public List<StudentAdmissionItems> StudentAdmissionItemsList { get; set; }
 
         // hkl: lägg till properties
         // Student admission items list property
@@ -62,7 +62,6 @@ namespace StudentAdmissionLibrary
                 {
                     string s = $"{item.Trim()}{ssSSN[index + 1].Trim()}";
                     var delimiters = new string[] { "\",\"", "" }; // delimiters "," and ""
-                    //var sSplit = s.Split(delimiters, StringSplitOptions.TrimEntries); // split to get substrings
                     var sSplit = s.Split(delimiters, StringSplitOptions.None); // split to get substrings
 
                     StudentAdmissionItems studentAdmissionItem = new();
@@ -79,53 +78,46 @@ namespace StudentAdmissionLibrary
 
                                 if (rxDate.IsMatch(sSplit[i].Trim()))
                                 {
+                                    int year = 0;
+                                    int month = 0;
+                                    int day = 0;
 
-                                    try
+                                    var dateParts = sSplit[i].Split('-');
+
+                                    for (int j = 0; j < dateParts.Length; j++)
                                     {
-                                        int year = 0;
-                                        int month = 0;
-                                        int day = 0;
-
-                                        var dateParts = sSplit[i].Split('-');
-
-                                        for (int j = 0; j < dateParts.Length; j++)
+                                        switch (j)
                                         {
-                                            switch (j)
-                                            {
-                                                case 0:
-                                                    bool isYearParsable = Int32.TryParse(dateParts[j], out year);
-                                                    if (!isYearParsable)
-                                                    {
-                                                        year = 1800;
-                                                    }
-                                                    break;
-                                                case 1:
-                                                    bool isMonthParsable = Int32.TryParse(dateParts[j], out month);
-                                                    if (!isMonthParsable)
-                                                    {
-                                                        month = 1;
-                                                    }
-                                                    break;
-                                                case 2:
-                                                    bool isDayParsable = Int32.TryParse(dateParts[j], out day);
-                                                    if (!isDayParsable)
-                                                    {
-                                                        day = 1;
-                                                    }
-                                                    break;
-                                                default:
-                                                    break;
-                                            }
+                                            case 0:
+                                                bool isYearParsable = Int32.TryParse(dateParts[j], out year);
+                                                if (!isYearParsable)
+                                                {
+                                                    year = 1;
+                                                }
+                                                break;
+                                            case 1:
+                                                bool isMonthParsable = Int32.TryParse(dateParts[j], out month);
+                                                if (!isMonthParsable)
+                                                {
+                                                    month = 1;
+                                                }
+                                                break;
+                                            case 2:
+                                                bool isDayParsable = Int32.TryParse(dateParts[j], out day);
+                                                if (!isDayParsable)
+                                                {
+                                                    day = 1;
+                                                }
+                                                break;
+                                            default:
+                                                break;
                                         }
-
-                                        studentAdmissionItem.AdmissionDate = new DateOnly(year, month, day);
-
-
                                     }
-                                    catch (Exception)
-                                    {
-                                        throw;
-                                    }
+                                    studentAdmissionItem.AdmissionDate = new DateOnly(year, month, day);
+                                }
+                                else
+                                {
+
                                 }
                                 break;
                             case 2:
@@ -261,7 +253,7 @@ namespace StudentAdmissionLibrary
                                         if (isPhoneOnlyDigits)
                                         {
                                             //String.Format("{0:(###) ###-####}", 8005551212);
-                                            if(tmpTrimmedPhone.Length == 9)
+                                            if (tmpTrimmedPhone.Length == 9)
                                             {
                                                 studentAdmissionItem.Phone = String.Format("{0:000-## ## ##}", Convert.ToInt64(tmpTrimmedPhone));
                                             }
@@ -273,7 +265,7 @@ namespace StudentAdmissionLibrary
                                             {
                                                 studentAdmissionItem.Phone = String.Format("{0:000-### ### ##}", Convert.ToInt64(tmpTrimmedPhone));
                                             }
-                                            
+
                                         }
                                         else
                                         {
@@ -353,7 +345,13 @@ namespace StudentAdmissionLibrary
 
                     }
 
-                    studentAdmissionItems.Add(studentAdmissionItem);
+
+                    // don't add student admission items if admission date ís minimal value
+                    // that indicates that the fild is empty.
+                    if (studentAdmissionItem.AdmissionDate != DateOnly.MinValue)
+                    {
+                        studentAdmissionItems.Add(studentAdmissionItem);
+                    }
                 }
             }
 

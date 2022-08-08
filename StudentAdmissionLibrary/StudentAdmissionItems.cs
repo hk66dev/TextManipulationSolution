@@ -100,7 +100,8 @@ namespace StudentAdmissionLibrary
         public StudentAdmissionItems()
         {
             PersonNumber = String.Empty;
-            AdmissionDate = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            //AdmissionDate = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            AdmissionDate = new(); // sets the date to minimal value
             FirstName = String.Empty;
             LastName = String.Empty;
             FormerSchool = String.Empty;
