@@ -151,8 +151,5 @@ namespace StudentAdmissionLibrary
         //"Inriktning",
         //"Upprop uteblivit",
         //"Upprop kommentar"
-
-
-
     }
 }

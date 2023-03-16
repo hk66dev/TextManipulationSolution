@@ -17,7 +17,7 @@
 </table>
 
 
-<p><button class="btn btn-primary" @onfocus="CountNumberOfRows" @onclick="ChangeText">Change text</button></p>
+<p><button class="btn-primary" @onfocus="CountNumberOfRows" @onclick="ChangeText">Change text</button></p>
 
 @code {
 
@@ -45,7 +45,7 @@
     }
 
     private void CountNumberOfRows()
-    {
+    { 
         List<string> rows = new();
         rows = InputValue.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
         NumberOfInputRows = rows.Count();        
