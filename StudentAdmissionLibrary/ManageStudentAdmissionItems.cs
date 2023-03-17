@@ -57,7 +57,7 @@ namespace StudentAdmissionLibrary
             // is found on one row
             foreach (var (item, index) in ssSSN.Select((value, i) => (value, i)))
             {
-                // when swedish social security number is fond
+                // when swedish social security number is found
                 if (rxSSN.IsMatch(item))
                 {
                     string s = $"{item.Trim()}{ssSSN[index + 1].Trim()}";
@@ -158,69 +158,13 @@ namespace StudentAdmissionLibrary
                                 studentAdmissionItem.Address = sSplit[i].Trim();
                                 break;
                             case 5:
-                                // switch "  " (double spaces) to "\t" (tabular)
-                                // to make regex easier
-                                Regex rxSwitchDoubleSpace = new("  ", RegexOptions.None);
-                                string strVariousItems = rxSwitchDoubleSpace.Replace(sSplit[i], " \t ");
-
-                                // initiate temporaty strings
-                                string postalCode = string.Empty;
-                                string city = string.Empty;
-                                string phone = string.Empty;
-                                string mail = string.Empty;
-
-                                // build regex pattern
-                                string patternPostalCode = @"^\d{3} \d{2}";
-                                string patternCity = @"[a-öA-Ö]+[ -]*[a-öA-Ö]* ";
-                                string patternPhone = @"\d{2}[\d -]{6,10}\d|\+\d{2} ?\d[\d -]{7,10}\d";
-                                string patternMail = @"[a-öA-Ö0-9.-]+@[a-zA-Z.-]+\.[a-zA-Z]{2,6}";
-
-                                // get matches
-                                string patternVariousItems = $"{patternPostalCode}|{patternCity}|{patternPhone}|{patternMail}";
-                                Regex rxVariousItems = new(patternVariousItems, RegexOptions.None);
-                                MatchCollection matchVariousItems = rxVariousItems.Matches(strVariousItems);
-
-
-                                // hkl: Endast för test
-                                List<string> aList = new();
-
-                                foreach (var match in matchVariousItems.OfType<Match>())
-                                {
-                                    aList.Add(match.Value);
-                                }
-                                string a = string.Empty;
-                                // hkl: End Endast för test
-
-
-                                // step through matches 
-                                foreach (var match in matchVariousItems.OfType<Match>())
-                                {
-                                    // check matches and copy to correct class field
-                                    Regex rxPostalCode = new(patternPostalCode);
-                                    Regex rxCity = new(patternCity);
-                                    Regex rxPhone = new(patternPhone);
-                                    Regex rxMail = new(patternMail);
-                                    if (rxPostalCode.IsMatch(match.Value) && match.Length <= 6)
-                                    {
-                                        postalCode = match.Value;
-                                    }
-                                    else if (rxCity.IsMatch(match.Value) && !match.Value.Contains('@')) // match city but not mail
-                                    {
-                                        city = match.Value;
-                                    }
-                                    else if (rxPhone.IsMatch(match.Value) && match.Length >= 9)
-                                    {
-                                        phone = match.Value;
-                                    }
-                                    else if (rxMail.IsMatch(match.Value))
-                                    {
-                                        mail = match.Value;
-                                    }
-                                }
-
-                                // copy to correct field
-                                studentAdmissionItem.PostalCode = postalCode.Trim();
-                                studentAdmissionItem.City = city.Trim();
+                                studentAdmissionItem.PostalCode = sSplit[i].Trim();
+                                break;
+                            case 6:
+                                studentAdmissionItem.City = sSplit[i].Trim();
+                                break;
+                            case 7:
+                                string phone = sSplit[i].Trim();
 
                                 // check and adjust phone number
                                 if (phone.Length > 0)
@@ -252,18 +196,17 @@ namespace StudentAdmissionLibrary
                                         bool isPhoneOnlyDigits = tmpTrimmedPhone.All(char.IsDigit);
                                         if (isPhoneOnlyDigits)
                                         {
-                                            //String.Format("{0:(###) ###-####}", 8005551212);
                                             if (tmpTrimmedPhone.Length == 9)
                                             {
-                                                studentAdmissionItem.Phone = String.Format("{0:000-## ## ##}", Convert.ToInt64(tmpTrimmedPhone));
+                                                studentAdmissionItem.Phone = string.Format("{0:000-## ## ##}", Convert.ToInt64(tmpTrimmedPhone));
                                             }
                                             else if (tmpTrimmedPhone.Length == 10)
                                             {
-                                                studentAdmissionItem.Phone = String.Format("{0:000-### ## ##}", Convert.ToInt64(tmpTrimmedPhone));
+                                                studentAdmissionItem.Phone = string.Format("{0:000-### ## ##}", Convert.ToInt64(tmpTrimmedPhone));
                                             }
                                             else if (tmpTrimmedPhone.Length == 11)
                                             {
-                                                studentAdmissionItem.Phone = String.Format("{0:000-### ### ##}", Convert.ToInt64(tmpTrimmedPhone));
+                                                studentAdmissionItem.Phone = string.Format("{0:000-### ### ##}", Convert.ToInt64(tmpTrimmedPhone));
                                             }
 
                                         }
@@ -273,9 +216,11 @@ namespace StudentAdmissionLibrary
                                         }
                                     }
                                 }
-                                studentAdmissionItem.MailAddress = mail.Trim();
                                 break;
-                            case 6:
+                            case 8:
+                                studentAdmissionItem.MailAddress = sSplit[i].Trim();
+                                break;
+                            case 9:
                                 bool isChoisRankParsable = Int32.TryParse(sSplit[i], out int rank);
 
                                 if (isChoisRankParsable)
@@ -287,28 +232,28 @@ namespace StudentAdmissionLibrary
                                     studentAdmissionItem.ChoiceRank = 0;
                                 }
                                 break;
-                            case 7:
+                            case 10:
                                 studentAdmissionItem.AestheticChoice = sSplit[i].Trim();
                                 break;
-                            case 8:
+                            case 11:
                                 studentAdmissionItem.Language11 = sSplit[i].Trim();
                                 break;
-                            case 9:
+                            case 12:
                                 studentAdmissionItem.Language12 = sSplit[i].Trim();
                                 break;
-                            case 10:
+                            case 13:
                                 studentAdmissionItem.Language22 = sSplit[i].Trim();
                                 break;
-                            case 11:
+                            case 14:
                                 studentAdmissionItem.IndividualChoice1 = sSplit[i].Trim();
                                 break;
-                            case 12:
+                            case 15:
                                 studentAdmissionItem.MotherTongue = sSplit[i].Trim();
                                 break;
-                            case 13:
+                            case 16:
                                 studentAdmissionItem.SwedishAsSecondLanguage = sSplit[i].Trim();
                                 break;
-                            case 14:
+                            case 17:
                                 bool isGradesParsable = double.TryParse(sSplit[i], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out double grades);
                                 if (isGradesParsable)
                                 {
@@ -319,7 +264,7 @@ namespace StudentAdmissionLibrary
                                     studentAdmissionItem.Grades = 0.0;
                                 }
                                 break;
-                            case 15:
+                            case 18:
                                 bool isTestScoreParsable = double.TryParse(sSplit[i], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out double testScore);
                                 if (isTestScoreParsable)
                                 {
@@ -330,17 +275,207 @@ namespace StudentAdmissionLibrary
                                     studentAdmissionItem.TestScore = 0.0;
                                 }
                                 break;
-                            case 16:
+                            case 19:
                                 studentAdmissionItem.ProgramOrientation = sSplit[i].Trim();
                                 break;
-                            case 17:
+                            case 20:
                                 studentAdmissionItem.AbsentRollCall = sSplit[i].Trim();
                                 break;
-                            case 18:
-                                studentAdmissionItem.RollCallComment = sSplit[i].Trim();
+                            case 21:
+                                string tmpRCC = sSplit[i].Trim();
+                                if (tmpRCC.Contains('\"'))
+                                {
+                                    tmpRCC = tmpRCC.Replace('\"', ' ');
+                                }
+                                studentAdmissionItem.RollCallComment = tmpRCC.Trim();
                                 break;
                             default:
                                 break;
+
+                                /*case 5:
+                                    // switch "  " (double spaces) to "\t" (tabular)
+                                    // to make regex easier
+                                    Regex rxSwitchDoubleSpace = new("  ", RegexOptions.None);
+                                    string strVariousItems = rxSwitchDoubleSpace.Replace(sSplit[i], " \t ");
+
+                                    // initiate temporaty strings
+                                    string postalCode = string.Empty;
+                                    string city = string.Empty;
+                                    string phone = string.Empty;
+                                    string mail = string.Empty;
+
+                                    // build regex pattern
+                                    string patternPostalCode = @"^\d{3} \d{2}";
+                                    string patternCity = @"[a-öA-Ö]+[ -]*[a-öA-Ö]* ";
+                                    string patternPhone = @"\d{2}[\d -]{6,10}\d|\+\d{2} ?\d[\d -]{7,10}\d";
+                                    string patternMail = @"[a-öA-Ö0-9.-]+@[a-zA-Z.-]+\.[a-zA-Z]{2,6}";
+
+                                    // get matches
+                                    string patternVariousItems = $"{patternPostalCode}|{patternCity}|{patternPhone}|{patternMail}";
+                                    Regex rxVariousItems = new(patternVariousItems, RegexOptions.None);
+                                    MatchCollection matchVariousItems = rxVariousItems.Matches(strVariousItems);
+
+
+                                    // hkl: Endast för test
+                                    List<string> aList = new();
+
+                                    foreach (var match in matchVariousItems.OfType<Match>())
+                                    {
+                                        aList.Add(match.Value);
+                                    }
+                                    string a = string.Empty;
+                                    // hkl: End Endast för test
+
+
+                                    // step through matches 
+                                    foreach (var match in matchVariousItems.OfType<Match>())
+                                    {
+                                        // check matches and copy to correct class field
+                                        Regex rxPostalCode = new(patternPostalCode);
+                                        Regex rxCity = new(patternCity);
+                                        Regex rxPhone = new(patternPhone);
+                                        Regex rxMail = new(patternMail);
+                                        if (rxPostalCode.IsMatch(match.Value) && match.Length <= 6)
+                                        {
+                                            postalCode = match.Value;
+                                        }
+                                        else if (rxCity.IsMatch(match.Value) && !match.Value.Contains('@')) // match city but not mail
+                                        {
+                                            city = match.Value;
+                                        }
+                                        else if (rxPhone.IsMatch(match.Value) && match.Length >= 9)
+                                        {
+                                            phone = match.Value;
+                                        }
+                                        else if (rxMail.IsMatch(match.Value))
+                                        {
+                                            mail = match.Value;
+                                        }
+                                    }
+
+                                    // copy to correct field
+                                    studentAdmissionItem.PostalCode = postalCode.Trim();
+                                    studentAdmissionItem.City = city.Trim();
+
+                                    // check and adjust phone number
+                                    if (phone.Length > 0)
+                                    {
+                                        // temporary phone string while configuring phone number
+                                        string tmpPhone = string.Empty;
+
+                                        if (phone.StartsWith('0') | phone.StartsWith('+'))
+                                        {
+                                            tmpPhone = phone.Trim();
+                                        }
+                                        else
+                                        {
+                                            tmpPhone = $"0{phone.Trim()}";
+                                        }
+
+                                        // check for '-'
+                                        if (tmpPhone.Contains('-'))
+                                        {
+                                            studentAdmissionItem.Phone = tmpPhone.Trim();
+                                        }
+                                        else
+                                        {
+                                            // remove all whitespace characters from string
+                                            string tmpTrimmedPhone = String.Concat(tmpPhone.Where(c => !Char.IsWhiteSpace(c)));
+
+                                            // check if phone number only contains digits
+                                            // insert "-" as character three if so
+                                            bool isPhoneOnlyDigits = tmpTrimmedPhone.All(char.IsDigit);
+                                            if (isPhoneOnlyDigits)
+                                            {
+                                                //String.Format("{0:(###) ###-####}", 8005551212);
+                                                if (tmpTrimmedPhone.Length == 9)
+                                                {
+                                                    studentAdmissionItem.Phone = String.Format("{0:000-## ## ##}", Convert.ToInt64(tmpTrimmedPhone));
+                                                }
+                                                else if (tmpTrimmedPhone.Length == 10)
+                                                {
+                                                    studentAdmissionItem.Phone = String.Format("{0:000-### ## ##}", Convert.ToInt64(tmpTrimmedPhone));
+                                                }
+                                                else if (tmpTrimmedPhone.Length == 11)
+                                                {
+                                                    studentAdmissionItem.Phone = String.Format("{0:000-### ### ##}", Convert.ToInt64(tmpTrimmedPhone));
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                studentAdmissionItem.Phone = tmpPhone.Trim();
+                                            }
+                                        }
+                                    }
+                                    studentAdmissionItem.MailAddress = mail.Trim();
+                                    break;
+                                case 6:
+                                    bool isChoisRankParsable = Int32.TryParse(sSplit[i], out int rank);
+
+                                    if (isChoisRankParsable)
+                                    {
+                                        studentAdmissionItem.ChoiceRank = rank;
+                                    }
+                                    else
+                                    {
+                                        studentAdmissionItem.ChoiceRank = 0;
+                                    }
+                                    break;
+                                case 7:
+                                    studentAdmissionItem.AestheticChoice = sSplit[i].Trim();
+                                    break;
+                                case 8:
+                                    studentAdmissionItem.Language11 = sSplit[i].Trim();
+                                    break;
+                                case 9:
+                                    studentAdmissionItem.Language12 = sSplit[i].Trim();
+                                    break;
+                                case 10:
+                                    studentAdmissionItem.Language22 = sSplit[i].Trim();
+                                    break;
+                                case 11:
+                                    studentAdmissionItem.IndividualChoice1 = sSplit[i].Trim();
+                                    break;
+                                case 12:
+                                    studentAdmissionItem.MotherTongue = sSplit[i].Trim();
+                                    break;
+                                case 13:
+                                    studentAdmissionItem.SwedishAsSecondLanguage = sSplit[i].Trim();
+                                    break;
+                                case 14:
+                                    bool isGradesParsable = double.TryParse(sSplit[i], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out double grades);
+                                    if (isGradesParsable)
+                                    {
+                                        studentAdmissionItem.Grades = grades;
+                                    }
+                                    else
+                                    {
+                                        studentAdmissionItem.Grades = 0.0;
+                                    }
+                                    break;
+                                case 15:
+                                    bool isTestScoreParsable = double.TryParse(sSplit[i], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out double testScore);
+                                    if (isTestScoreParsable)
+                                    {
+                                        studentAdmissionItem.TestScore = testScore;
+                                    }
+                                    else
+                                    {
+                                        studentAdmissionItem.TestScore = 0.0;
+                                    }
+                                    break;
+                                case 16:
+                                    studentAdmissionItem.ProgramOrientation = sSplit[i].Trim();
+                                    break;
+                                case 17:
+                                    studentAdmissionItem.AbsentRollCall = sSplit[i].Trim();
+                                    break;
+                                case 18:
+                                    studentAdmissionItem.RollCallComment = sSplit[i].Trim();
+                                    break;
+                                default:
+                                    break;*/
                         }
 
                     }
