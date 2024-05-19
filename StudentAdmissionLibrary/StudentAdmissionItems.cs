@@ -124,32 +124,5 @@ namespace StudentAdmissionLibrary
             AbsentRollCall = String.Empty;
             RollCallComment = String.Empty;
         }
-
-
-        //"Barn- och fritidsprogrammet"
-
-        //"Personnummer",
-        //"Int. datum",
-        //"Namn", 
-        //"Skola",
-        //"Utdelningsadress",
-        //
-        //"Postadress
-        // Tel. nummer
-        // E-postadress",
-        //
-        //"Valrang",
-        //"EsV",
-        //"Mspr 1:1",
-        //"Mspr 1:2",
-        //"Mspr 2:2",
-        //"IndV1",
-        //"ML",
-        //"SvA",
-        //"Betyg",
-        //"Provpoäng",
-        //"Inriktning",
-        //"Upprop uteblivit",
-        //"Upprop kommentar"
     }
 }
