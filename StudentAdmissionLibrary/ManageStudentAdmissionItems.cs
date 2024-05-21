@@ -13,12 +13,14 @@ namespace StudentAdmissionLibrary
     public class ManageStudentAdmissionItems
     {
         public string InputText { get; }
-        public string OutputText { get; private set; }
-        public List<StudentAdmissionItems> StudentAdmissionItemsList { get; set; }
-
-        // hkl: lägg till properties
-        // Student admission items list property
-
+        public string? StudentAdmissionItemsToString { get; private set; }
+        public string? StudentsToString { get;  set; }
+        public string? GradesToString { get; private set; }
+        public string? CourseChoicesToString { get; private set; }
+        public List<StudentAdmissionItems>? StudentAdmissionItemsList { get; set; }
+        public List<Student>? Students { get;  set; }
+        public List<Grade>? Grades { get;  set; }
+        public List<CourseChoice>? CourseChoices { get;  set; }
 
 
 
@@ -26,28 +28,225 @@ namespace StudentAdmissionLibrary
         public ManageStudentAdmissionItems(string inputText)
         {
             InputText = inputText;
-            OutputText = GetStudentAdmissionItemsString();
             StudentAdmissionItemsList = GetStudentAdmissionItemsList();
-            //StudentAdmissionItemsList = new List<StudentAdmissionItems>();
+            StudentAdmissionItemsToString = GetStudentAdmissionItemsToString();
+            (Students, Grades, CourseChoices) = GetStudentLists();
+            StudentsToString = GetStudentsToString().ToString();
+            GradesToString = GetGradesToString().ToString();
+            CourseChoicesToString = GetCourseChoicesToString();
+        }
+
+        private string? GetCourseChoicesToString()
+        {
+            // check if list is null
+            if (CourseChoices == null) return string.Empty;
+
+            // put together the output string,
+            // header and rows from the list
+            StringBuilder output = new();
+
+            string header = "PersonNumber\tCourseType\tCourse";
+            output.AppendLine(header);
+
+            //foreach (var item in GetStudentAdmissionItemsList())
+            foreach (var item in CourseChoices)
+            {
+                string s = $"{item.PersonNumber}\t{item.CourseType}\t{item.Course}";
+
+                output.AppendLine(s);
+            }
+
+            return output.ToString();
+        }
+
+        private object GetGradesToString()
+        {
+            // check if list is null
+            if (Grades == null) return string.Empty;
+
+            // put together the output string,
+            // header and rows from the list
+            StringBuilder output = new();
+
+            string header = "PersonNumber\tGrade";
+            output.AppendLine(header);
+
+            //foreach (var item in GetStudentAdmissionItemsList())
+            foreach (var item in Grades)
+            {
+                string s = $"{item.PersonNumber}\t{item.Grades}";
+
+                output.AppendLine(s);
+            }
+
+            return output.ToString();
+        }
+
+        private string GetStudentsToString()
+        {
+            // check if list is null
+            if (Students == null)  return string.Empty;
+
+            // put together the output string,
+            // header and rows from the list
+            StringBuilder output = new();
+
+            string header = "PersonNumber\tFirstName\tLastName\tFormerSchool\tCity\tChoiceRank\tProgramOrientation";
+            output.AppendLine(header);
+
+            // TODO: test if this works
+            //foreach (var item in GetStudentAdmissionItemsList())
+            foreach (var item in Students)
+            {
+                string s =
+                    $"{item.PersonNumber}\t{item.FirstName}\t{item.LastName}\t" +
+                    $"{item.FormerSchool}\t{item.City}\t{item.ChoiceRank}\t{item.ProgramOrientation}\t" ;
+
+                output.AppendLine(s);
+            }
+
+            return output.ToString();
+        }
+
+        private (List<Student>? Students, List<Grade>? Grades, List<CourseChoice>? CourseChoices) 
+            GetStudentLists()
+        //List<StudentAdmissionItems> studentAdmissionItemsList
+        {
+            if (StudentAdmissionItemsList == null) return (null, null, null);
+
+            List<Student> students = new();
+            List<Grade> grades = new();
+            List<CourseChoice> courseChoices = new();
+
+            foreach (var studentAdmissionItems in StudentAdmissionItemsList)
+            {
+                if (studentAdmissionItems == null) continue;
+
+                // Student
+                Student student = new()
+                {
+                    PersonNumber = studentAdmissionItems.PersonNumber,
+                    FirstName = studentAdmissionItems.FirstName,
+                    LastName = studentAdmissionItems.LastName,
+                    FormerSchool = studentAdmissionItems.FormerSchool,
+                    City = studentAdmissionItems.City,
+                    ChoiceRank = studentAdmissionItems.ChoiceRank,
+                    ProgramOrientation = studentAdmissionItems.ProgramOrientation
+                };
+
+                // Add student to list
+                students.Add(student);
+
+                // Grade
+                Grade grade = new()
+                {
+                    PersonNumber = studentAdmissionItems.PersonNumber,
+                    Grades = studentAdmissionItems.Grades,
+                };
+                // Add grade to list
+                grades.Add(grade);
+
+                //------------------- START ----------------------------
+                #region CourseChoice: split choices and build list
+                // AestheticChoice
+                CourseChoice courseChoice = new()
+                {
+                    PersonNumber = studentAdmissionItems.PersonNumber,
+                    CourseType = "AestheticChoice",
+                    Course = studentAdmissionItems.AestheticChoice
+                };
+                // Add AestheticChoice to list
+                courseChoices.Add(courseChoice);
+
+                // Language11                
+                courseChoice = new()
+                {
+                    PersonNumber = studentAdmissionItems.PersonNumber,
+                    CourseType = "Language11",
+                    Course = studentAdmissionItems.Language11
+                };
+                // Add Language11 to list
+                courseChoices.Add(courseChoice);
+
+                // Language12               
+                courseChoice = new()
+                {
+                    PersonNumber = studentAdmissionItems.PersonNumber,
+                    CourseType = "Language12",
+                    Course = studentAdmissionItems.Language12
+                };
+                // Add Language12 to list
+                courseChoices.Add(courseChoice);
+
+                // Language22               
+                courseChoice = new()
+                {
+                    PersonNumber = studentAdmissionItems.PersonNumber,
+                    CourseType = "Language22",
+                    Course = studentAdmissionItems.Language22
+                };
+                // Add Language22 to list
+                courseChoices.Add(courseChoice);
+
+                // IndividualChoice1               
+                courseChoice = new()
+                {
+                    PersonNumber = studentAdmissionItems.PersonNumber,
+                    CourseType = "IndividualChoice1",
+                    Course = studentAdmissionItems.IndividualChoice1
+                };
+                // Add IndividualChoice1 to list
+                courseChoices.Add(courseChoice);
+
+                // MotherTongue               
+                courseChoice = new()
+                {
+                    PersonNumber = studentAdmissionItems.PersonNumber,
+                    CourseType = "MotherTongue",
+                    Course = studentAdmissionItems.MotherTongue
+                };
+                // Add MotherTongue to list
+                courseChoices.Add(courseChoice);
+
+                // SwedishAsSecondLanguage               
+                courseChoice = new()
+                {
+                    PersonNumber = studentAdmissionItems.PersonNumber,
+                    CourseType = "SwedishAsSecondLanguage",
+                    Course = studentAdmissionItems.SwedishAsSecondLanguage
+                };
+                // Add SwedishAsSecondLanguage to list
+                courseChoices.Add(courseChoice);
+
+                #endregion
+                //------------------- END ------------------------------
+            }
+
+            // return lists
+            return (students, grades, courseChoices);
         }
 
         public List<StudentAdmissionItems> GetStudentAdmissionItemsList()
         {
-            // build regex pattern used to split input
+            // build regex pattern used to split input [\w,åäöÅÄÖ -]+program[\w,åäöÅÄÖ -]+
             string patternSSN = @"(\d{6}-\w{2}\d{2})";
-            string patternP1 = @"[\w, -]+program[\w, -]+";
-            string patternP2 = @"Gymnas[ie]+särskola-[\w, -]+";
-            string patternP3 = @"[\w, -]+alternativ";
-            string patternP4 = @"[\w, -]+introduktion[\w, -]*";
-            string patternP5 = @"Startar ej[\w, :-]+";
-            string patternP6 = @"[\w, -]+högrehandsval[\w, /-]+";
+            string patternP1 = @"([\w, -]+program[\w, -]+)";
+            //string patternP2 = @"Gymnas[ie]+särskola-[\w, -]+";
+            string patternP2 = @"(Anpassad gymnasieskola[\w, -]+)";
+            string patternP3 = @"([\w, -]+alternativ)";
+            string patternP4 = @"([\w, -]+introduktion[\w, -]*)";
+            //string patternP5 = @"(Startar ej[\w, :-]+)";
+            string patternP5 = @"([\w, -]+Personnummer[\w, -]+)";
+            //string patternP5 = @""""" ""Personnummer"",""Int. datum"",""Namn"",""Skola"",""Utdelningsadress"",""Postadress"",""Ort"",""Tel. nummer"",""E-postadress"",""Valrang"",""EsV"",""Mspr 1:1"",""Mspr 1:2"",""Mspr 2:2"",""IndV1"",""ML"",""SvA"",""Betyg"",""Provpoäng"",""Inriktning"",""Upprop uteblivit"",""Upprop kommentar"" """"";
+            string patternP6 = @"([\w, -]+högrehandsval[\w, /-]+)";
             string pattern = $"{patternSSN}|{patternP1}|{patternP2}|{patternP3}|{patternP4}|{patternP5}|{patternP6}";
+            //string pattern = $"{patternSSN}";
             Regex rx = new(pattern, RegexOptions.None);
 
             //Split at swedish social security number
             String[] ssSSN = rx.Split(InputText);
 
-            // student list with their choice
+            // studentAdmissionItems list with their choice
             List<StudentAdmissionItems> studentAdmissionItems = new();
 
             Regex rxSSN = new(patternSSN, RegexOptions.IgnorePatternWhitespace);
@@ -292,196 +491,12 @@ namespace StudentAdmissionLibrary
                             default:
                                 break;
 
-                                /*case 5:
-                                    // switch "  " (double spaces) to "\t" (tabular)
-                                    // to make regex easier
-                                    Regex rxSwitchDoubleSpace = new("  ", RegexOptions.None);
-                                    string strVariousItems = rxSwitchDoubleSpace.Replace(sSplit[i], " \t ");
 
-                                    // initiate temporaty strings
-                                    string postalCode = string.Empty;
-                                    string city = string.Empty;
-                                    string phone = string.Empty;
-                                    string mail = string.Empty;
-
-                                    // build regex pattern
-                                    string patternPostalCode = @"^\d{3} \d{2}";
-                                    string patternCity = @"[a-öA-Ö]+[ -]*[a-öA-Ö]* ";
-                                    string patternPhone = @"\d{2}[\d -]{6,10}\d|\+\d{2} ?\d[\d -]{7,10}\d";
-                                    string patternMail = @"[a-öA-Ö0-9.-]+@[a-zA-Z.-]+\.[a-zA-Z]{2,6}";
-
-                                    // get matches
-                                    string patternVariousItems = $"{patternPostalCode}|{patternCity}|{patternPhone}|{patternMail}";
-                                    Regex rxVariousItems = new(patternVariousItems, RegexOptions.None);
-                                    MatchCollection matchVariousItems = rxVariousItems.Matches(strVariousItems);
-
-
-                                    // hkl: Endast för test
-                                    List<string> aList = new();
-
-                                    foreach (var match in matchVariousItems.OfType<Match>())
-                                    {
-                                        aList.Add(match.Value);
-                                    }
-                                    string a = string.Empty;
-                                    // hkl: End Endast för test
-
-
-                                    // step through matches 
-                                    foreach (var match in matchVariousItems.OfType<Match>())
-                                    {
-                                        // check matches and copy to correct class field
-                                        Regex rxPostalCode = new(patternPostalCode);
-                                        Regex rxCity = new(patternCity);
-                                        Regex rxPhone = new(patternPhone);
-                                        Regex rxMail = new(patternMail);
-                                        if (rxPostalCode.IsMatch(match.Value) && match.Length <= 6)
-                                        {
-                                            postalCode = match.Value;
-                                        }
-                                        else if (rxCity.IsMatch(match.Value) && !match.Value.Contains('@')) // match city but not mail
-                                        {
-                                            city = match.Value;
-                                        }
-                                        else if (rxPhone.IsMatch(match.Value) && match.Length >= 9)
-                                        {
-                                            phone = match.Value;
-                                        }
-                                        else if (rxMail.IsMatch(match.Value))
-                                        {
-                                            mail = match.Value;
-                                        }
-                                    }
-
-                                    // copy to correct field
-                                    studentAdmissionItem.PostalCode = postalCode.Trim();
-                                    studentAdmissionItem.City = city.Trim();
-
-                                    // check and adjust phone number
-                                    if (phone.Length > 0)
-                                    {
-                                        // temporary phone string while configuring phone number
-                                        string tmpPhone = string.Empty;
-
-                                        if (phone.StartsWith('0') | phone.StartsWith('+'))
-                                        {
-                                            tmpPhone = phone.Trim();
-                                        }
-                                        else
-                                        {
-                                            tmpPhone = $"0{phone.Trim()}";
-                                        }
-
-                                        // check for '-'
-                                        if (tmpPhone.Contains('-'))
-                                        {
-                                            studentAdmissionItem.Phone = tmpPhone.Trim();
-                                        }
-                                        else
-                                        {
-                                            // remove all whitespace characters from string
-                                            string tmpTrimmedPhone = String.Concat(tmpPhone.Where(c => !Char.IsWhiteSpace(c)));
-
-                                            // check if phone number only contains digits
-                                            // insert "-" as character three if so
-                                            bool isPhoneOnlyDigits = tmpTrimmedPhone.All(char.IsDigit);
-                                            if (isPhoneOnlyDigits)
-                                            {
-                                                //String.Format("{0:(###) ###-####}", 8005551212);
-                                                if (tmpTrimmedPhone.Length == 9)
-                                                {
-                                                    studentAdmissionItem.Phone = String.Format("{0:000-## ## ##}", Convert.ToInt64(tmpTrimmedPhone));
-                                                }
-                                                else if (tmpTrimmedPhone.Length == 10)
-                                                {
-                                                    studentAdmissionItem.Phone = String.Format("{0:000-### ## ##}", Convert.ToInt64(tmpTrimmedPhone));
-                                                }
-                                                else if (tmpTrimmedPhone.Length == 11)
-                                                {
-                                                    studentAdmissionItem.Phone = String.Format("{0:000-### ### ##}", Convert.ToInt64(tmpTrimmedPhone));
-                                                }
-
-                                            }
-                                            else
-                                            {
-                                                studentAdmissionItem.Phone = tmpPhone.Trim();
-                                            }
-                                        }
-                                    }
-                                    studentAdmissionItem.MailAddress = mail.Trim();
-                                    break;
-                                case 6:
-                                    bool isChoisRankParsable = Int32.TryParse(sSplit[i], out int rank);
-
-                                    if (isChoisRankParsable)
-                                    {
-                                        studentAdmissionItem.ChoiceRank = rank;
-                                    }
-                                    else
-                                    {
-                                        studentAdmissionItem.ChoiceRank = 0;
-                                    }
-                                    break;
-                                case 7:
-                                    studentAdmissionItem.AestheticChoice = sSplit[i].Trim();
-                                    break;
-                                case 8:
-                                    studentAdmissionItem.Language11 = sSplit[i].Trim();
-                                    break;
-                                case 9:
-                                    studentAdmissionItem.Language12 = sSplit[i].Trim();
-                                    break;
-                                case 10:
-                                    studentAdmissionItem.Language22 = sSplit[i].Trim();
-                                    break;
-                                case 11:
-                                    studentAdmissionItem.IndividualChoice1 = sSplit[i].Trim();
-                                    break;
-                                case 12:
-                                    studentAdmissionItem.MotherTongue = sSplit[i].Trim();
-                                    break;
-                                case 13:
-                                    studentAdmissionItem.SwedishAsSecondLanguage = sSplit[i].Trim();
-                                    break;
-                                case 14:
-                                    bool isGradesParsable = double.TryParse(sSplit[i], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out double grades);
-                                    if (isGradesParsable)
-                                    {
-                                        studentAdmissionItem.Grades = grades;
-                                    }
-                                    else
-                                    {
-                                        studentAdmissionItem.Grades = 0.0;
-                                    }
-                                    break;
-                                case 15:
-                                    bool isTestScoreParsable = double.TryParse(sSplit[i], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out double testScore);
-                                    if (isTestScoreParsable)
-                                    {
-                                        studentAdmissionItem.TestScore = testScore;
-                                    }
-                                    else
-                                    {
-                                        studentAdmissionItem.TestScore = 0.0;
-                                    }
-                                    break;
-                                case 16:
-                                    studentAdmissionItem.ProgramOrientation = sSplit[i].Trim();
-                                    break;
-                                case 17:
-                                    studentAdmissionItem.AbsentRollCall = sSplit[i].Trim();
-                                    break;
-                                case 18:
-                                    studentAdmissionItem.RollCallComment = sSplit[i].Trim();
-                                    break;
-                                default:
-                                    break;*/
                         }
 
                     }
 
-
-                    // don't add student admission items if admission date ís minimal value
+                    // don't add studentAdmissionItems admission items if admission date ís minimal value
                     // that indicates that the fild is empty.
                     if (studentAdmissionItem.AdmissionDate != DateOnly.MinValue)
                     {
@@ -493,8 +508,11 @@ namespace StudentAdmissionLibrary
             return studentAdmissionItems;
         }
 
-        public string GetStudentAdmissionItemsString()
+        public string GetStudentAdmissionItemsToString()
         {
+            // check if list is null
+            if (StudentAdmissionItemsList == null) return string.Empty;
+
             // put together the output string,
             // header and rows from the list
             StringBuilder output = new();
@@ -506,7 +524,9 @@ namespace StudentAdmissionLibrary
                 "Grades\tTestScore\tProgramOrientation\tAbsentRollCall\tRollCallComment";
             output.AppendLine(header);
 
-            foreach (var item in GetStudentAdmissionItemsList())
+            // TODO: test if this works
+            //foreach (var item in GetStudentAdmissionItemsList())
+            foreach (var item in StudentAdmissionItemsList)
             {
                 string s =
                     $"{item.PersonNumber}\t{item.AdmissionDate}\t{item.FirstName}\t{item.LastName}\t" +
@@ -525,10 +545,11 @@ namespace StudentAdmissionLibrary
         /// <summary>
         /// Overrides ToString().
         /// </summary>
-        /// <returns>String of student admission items from list, header and rows.</returns>
+        /// <returns>String of studentAdmissionItems admission items from list, header and rows.</returns>
         public override string ToString()
         {
-            return GetStudentAdmissionItemsString();
+            return GetStudentAdmissionItemsToString();
         }
+
     }
 }

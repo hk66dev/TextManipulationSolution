@@ -6,50 +6,53 @@
 
 <h5><label for="input">Input text:</label></h5>
 <table>
-    <tr><textarea  @onfocus="CountNumberOfRows"  id="input" rows="10" cols="100" wrap="soft" placeholder="Input text here" @bind="InputValue" ></textarea></tr>
-    <tr><lable for="input">Rows: @NumberOfInputRows</lable></tr>
+    <tr><textarea @onfocus="CountNumberOfRows" id="input" rows="10" cols="100" wrap="soft" placeholder="Input text here" @bind="InputValue"></textarea></tr>
+    <tr><lable for="input">Rows: @NumberOfInputLines</lable></tr>
 </table>
 
 <h5><label for="output">Changed text:</label></h5>
 <table>
-    <tr><textarea @onfocus="CountNumberOfRows" id="output" rows="10" cols="100" wrap="hard" placeholder="Output text here" @bind="OutputValue"></textarea></tr>
-    <tr><lable for="output">Rows: @NumberOfOutputRows</lable></tr>
+    <tr><textarea @onfocus="CountNumberOfRows" id="output" rows="10" cols="100" wrap="hard" placeholder="Output text here" @bind="Result"></textarea></tr>
+    <tr><lable for="output">Rows: @NumberOfResultLines</lable></tr>
 </table>
 
 
-<p><button class="btn-primary" @onfocus="CountNumberOfRows" @onclick="ChangeText">Change text</button></p>
+<p><button class="btn-primary" @onfocus="CountNumberOfRows" @onclick="UpdatePage">Change text</button></p>
+
+
 
 @code {
 
     private string InputValue { get; set; } = string.Empty;
-    private string OutputValue { get; set; } = string.Empty;
-    public int NumberOfInputRows { get; set; }
-    public int NumberOfOutputRows { get; set; }
+    private string Result { get; set; } = string.Empty;
+    public int NumberOfInputLines { get; set; }
+    public int NumberOfResultLines { get; set; }
 
     // separators
     char[] separators = new char[] { ',', ';', '\t' };
 
-    private void ChangeText()
+
+    private void UpdatePage()
     {
         if (InputValue.Length > 0)
         {
             ManageText mt = new(InputValue, separators);
-            OutputValue = mt.GetModifiedText();
+            Result = mt.GetModifiedText();
         }
         else
         {
-            OutputValue = string.Empty;
+            Result = string.Empty;
         }
 
         CountNumberOfRows();
     }
 
     private void CountNumberOfRows()
-    { 
+    {
         List<string> rows = new();
         rows = InputValue.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
-        NumberOfInputRows = rows.Count();        
-        rows = OutputValue.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
-        NumberOfOutputRows = rows.Count();
+        NumberOfInputLines = rows.Count();
+        rows = Result.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
+        NumberOfResultLines = rows.Count();
     }
 }

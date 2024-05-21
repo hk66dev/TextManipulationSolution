@@ -12,33 +12,83 @@
 
 <h5><label for="output">Changed text:</label></h5>
 <table>
-    <tr><textarea @onfocus="CountNumberOfRows" id="output" rows="8" cols="100" wrap="hard" placeholder="Output text here" @bind="OutputValue"></textarea></tr>
+    <tr><textarea @onfocus="CountNumberOfRows" id="output" rows="8" cols="100" wrap="hard" placeholder="Result student admission items" @bind="ResultStudentAdmissionValue"></textarea></tr>
     <tr><lable for="output">Rows: @NumberOfOutputRows</lable></tr>
 </table>
 
 
-<p><button class="btn btn-primary" @onfocus="CountNumberOfRows" @onclick="ChangeText">Change text</button></p>
+<p><button class="btn btn-primary" @onfocus="CountNumberOfRows" @onclick="UpdatePage">Change text</button></p>
+
+<div class="container-fluid">
+    <div class="row mt-2">
+        @*  #Output textbox for "Students"*@
+        <div class="col form-floating">
+            <textarea class="form-control" id="txtstudents" name="txtstudents" placeholder="Students..." style="height: 300px"
+                      @bind:event="oninput" @bind:get="Students" @bind:set="Students_OnInput"></textarea>
+            <label class="form-lablel ps-4" for="txtstudents">Students...</label>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        @*  #Output textbox for "Grades"*@
+        <div class="col form-floating">
+            <textarea class="form-control" id="txtgrades" name="txtgrades" placeholder="Grades..." style="height: 300px"
+                      @bind:event="oninput" @bind:get="Grades" @bind:set="Grades_OnInput"></textarea>
+            <label class="form-lablel ps-4" for="txtgrades">Grades...</label>
+        </div>
+        @*  #Output textbox for "CourseChoices"*@
+        <div class="col form-floating">
+            <textarea class="form-control" id="txtcoursechoices" name="txtcoursechoices" placeholder="Course choices..." style="height: 300px"
+                      @bind:event="oninput" @bind:get="CourseChoices" @bind:set="CourseChoices_OnInput"></textarea>
+            <label class="form-lablel ps-4" for="txtcoursechoices">Course choices...</label>
+        </div>
+    </div>
+</div>
 
 @code {
 
     private string InputValue { get; set; } = string.Empty;
-    private string OutputValue { get; set; } = string.Empty;
+    private string ResultStudentAdmissionValue { get; set; } = string.Empty;
     public int NumberOfInputRows { get; set; }
     public int NumberOfOutputRows { get; set; }
+    public string Students { get; set; } = string.Empty;
+    public string Grades { get; set; } = string.Empty;
+    public string CourseChoices { get; set; } = string.Empty;
 
-    private void ChangeText()
+    private void OutputBookIt_OnInput(string value)
+    {
+        UpdatePage();
+    }
+
+    private void Students_OnInput(string value)
+    {
+        UpdatePage();
+    }
+
+    private void Grades_OnInput(string value)
+    {
+        UpdatePage();
+    }
+
+    private void CourseChoices_OnInput(string value)
+    {
+        UpdatePage();
+    }
+
+    private void UpdatePage()
     {        
         if (InputValue.Length > 0)
         {
             ManageStudentAdmissionItems manage = new(InputValue);
             //OutputValue = manage.GetStudentAdmissionItemsList().ToString();            
-            OutputValue = manage.OutputText;
-
-
+            ResultStudentAdmissionValue = manage.StudentAdmissionItemsToString;
+            Students = manage.StudentsToString;
+            Grades = manage.GradesToString;
+            CourseChoices = manage.CourseChoicesToString;
         }
         else
         {
-            OutputValue = string.Empty;
+            ResultStudentAdmissionValue = string.Empty;
         }
 
         CountNumberOfRows();
@@ -49,7 +99,7 @@
         List<string> rows = new();
         rows = InputValue.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
         NumberOfInputRows = rows.Count();        
-        rows = OutputValue.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
+        rows = ResultStudentAdmissionValue.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
         NumberOfOutputRows = rows.Count();
     }
 }
