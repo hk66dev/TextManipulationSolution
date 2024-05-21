@@ -1,62 +1,86 @@
 ﻿@page "/studentadmission"
 
 <PageTitle>Student admission</PageTitle>
-
-<h1>Student admission</h1>
-
-<h5><label for="input">Input text:</label></h5>
-<table>
-    <tr><textarea @onfocus="CountNumberOfRows"  id="input" rows="8" cols="100" wrap="soft" placeholder="Input text here" @bind="InputValue" ></textarea></tr>
-    <tr><lable for="input">Rows: @NumberOfInputRows</lable></tr>
-</table>
-
-<h5><label for="output">Changed text:</label></h5>
-<table>
-    <tr><textarea @onfocus="CountNumberOfRows" id="output" rows="8" cols="100" wrap="hard" placeholder="Result student admission items" @bind="ResultStudentAdmissionValue"></textarea></tr>
-    <tr><lable for="output">Rows: @NumberOfOutputRows</lable></tr>
-</table>
-
-
-<p><button class="btn btn-primary" @onfocus="CountNumberOfRows" @onclick="UpdatePage">Change text</button></p>
-
 <div class="container-fluid">
+    <h2>Manage student admission information</h2>
+
+    @*     <div class="row mt-2">
+    <div class="col form-floating">
+    <button class="btn btn-primary" @onfocus="CountNumberOfRows" @onclick="UpdatePage">Change text</button>
+    </div>
+    </div> *@
+
+    <div class="row mt-2">
+        @*  #Output textbox for "Input"*@
+        <div class="col form-floating">
+            <textarea class="form-control" id="txtinput" name="txtinput" wrap="hard" placeholder="Result student admission items..." style="height: 200px"
+                      @bind:event="oninput" @bind:get="Input" @bind:set="Input_OnInput"></textarea>
+            <label class="form-lablel ps-4" for="txtinput"><p>Input text here... @InputLines lines</p></label>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        @*  #Output textbox for "Result"*@
+        <div class="col form-floating">
+            <textarea class="form-control" id="txtresult" name="txtresult" wrap="hard" placeholder="Result student admission items..." style="height: 200px"
+                      @bind:event="oninput" @bind:get="Result" @bind:set="Result_OnInput"></textarea>
+            <label class="form-lablel ps-4" for="txtresult">Result student admission items... @ResultLines lines</label>
+        </div>
+    </div>
+
     <div class="row mt-2">
         @*  #Output textbox for "Students"*@
         <div class="col form-floating">
-            <textarea class="form-control" id="txtstudents" name="txtstudents" placeholder="Students..." style="height: 300px"
+            <textarea class="form-control" id="txtstudents" name="txtstudents" placeholder="Students..." style="height: 200px"
                       @bind:event="oninput" @bind:get="Students" @bind:set="Students_OnInput"></textarea>
-            <label class="form-lablel ps-4" for="txtstudents">Students...</label>
+            <label class="form-lablel ps-4" for="txtstudents">Students... @StudentLines</label>
         </div>
     </div>
 
     <div class="row mt-2">
         @*  #Output textbox for "Grades"*@
         <div class="col form-floating">
-            <textarea class="form-control" id="txtgrades" name="txtgrades" placeholder="Grades..." style="height: 300px"
+            <textarea class="form-control" id="txtgrades" name="txtgrades" placeholder="Grades..." style="height: 200px"
                       @bind:event="oninput" @bind:get="Grades" @bind:set="Grades_OnInput"></textarea>
-            <label class="form-lablel ps-4" for="txtgrades">Grades...</label>
+            <label class="form-lablel ps-4" for="txtgrades">Grades... @GradeLines</label>
         </div>
+
         @*  #Output textbox for "CourseChoices"*@
         <div class="col form-floating">
-            <textarea class="form-control" id="txtcoursechoices" name="txtcoursechoices" placeholder="Course choices..." style="height: 300px"
+            <textarea class="form-control" id="txtcoursechoices" name="txtcoursechoices" placeholder="Course choices..." style="height: 200px"
                       @bind:event="oninput" @bind:get="CourseChoices" @bind:set="CourseChoices_OnInput"></textarea>
-            <label class="form-lablel ps-4" for="txtcoursechoices">Course choices...</label>
+            <label class="form-lablel ps-4" for="txtcoursechoices">Course choices... @CourseChoiceLines</label>
         </div>
     </div>
 </div>
 
 @code {
 
-    private string InputValue { get; set; } = string.Empty;
-    private string ResultStudentAdmissionValue { get; set; } = string.Empty;
-    public int NumberOfInputRows { get; set; }
-    public int NumberOfOutputRows { get; set; }
-    public string Students { get; set; } = string.Empty;
-    public string Grades { get; set; } = string.Empty;
-    public string CourseChoices { get; set; } = string.Empty;
+    private string Input { get; set; } = string.Empty;
+    private string Result { get; set; } = string.Empty;
+    private string Students { get; set; } = string.Empty;
+    private string Grades { get; set; } = string.Empty;
+    private string CourseChoices { get; set; } = string.Empty;
+    private int InputLines { get; set; }
+    private int ResultLines { get; set; }
+    private int StudentLines { get; set; }
+    private int GradeLines { get; set; }
+    private int CourseChoiceLines { get; set; }
 
     private void OutputBookIt_OnInput(string value)
     {
+        UpdatePage();
+    }
+
+    private void Input_OnInput(string value)
+    {
+        Input = value;
+        UpdatePage();
+    }
+
+    private void Result_OnInput(string value)
+    {
+        Result = value;
         UpdatePage();
     }
 
@@ -76,19 +100,22 @@
     }
 
     private void UpdatePage()
-    {        
-        if (InputValue.Length > 0)
+    {
+        if (Input.Length > 0)
         {
-            ManageStudentAdmissionItems manage = new(InputValue);
-            //OutputValue = manage.GetStudentAdmissionItemsList().ToString();            
-            ResultStudentAdmissionValue = manage.StudentAdmissionItemsToString;
+            ManageStudentAdmissionItems manage = new(Input);
+            //OutputValue = manage.GetStudentAdmissionItemsList().ToString();
+            Result = manage.StudentAdmissionItemsToString;
             Students = manage.StudentsToString;
             Grades = manage.GradesToString;
             CourseChoices = manage.CourseChoicesToString;
         }
         else
         {
-            ResultStudentAdmissionValue = string.Empty;
+            Result = string.Empty;
+            Students = string.Empty;
+            Grades = string.Empty;
+            CourseChoices = string.Empty;
         }
 
         CountNumberOfRows();
@@ -97,9 +124,15 @@
     private void CountNumberOfRows()
     {
         List<string> rows = new();
-        rows = InputValue.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
-        NumberOfInputRows = rows.Count();        
-        rows = ResultStudentAdmissionValue.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
-        NumberOfOutputRows = rows.Count();
+        rows = Input.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
+        InputLines = rows.Count();
+        rows = Result.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
+        ResultLines = rows.Count() > 0 ? rows.Count() - 1 : rows.Count();
+        rows = Students.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
+        StudentLines = rows.Count() > 0 ? rows.Count() - 1 : rows.Count();
+        rows = Grades.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
+        GradeLines = rows.Count() > 0 ? rows.Count() - 1 : rows.Count();
+        rows = CourseChoices.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
+        CourseChoiceLines = rows.Count() > 0 ? rows.Count() - 1 : rows.Count();
     }
 }
