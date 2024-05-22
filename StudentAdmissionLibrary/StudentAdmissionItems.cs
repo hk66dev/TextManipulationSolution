@@ -32,6 +32,7 @@ namespace StudentAdmissionLibrary
         public double Grades { get; set; } = 0.0;
         public double TestScore { get; set; } = 0.0;
         public string ProgramOrientation { get; set; } = string.Empty;
+        public HighSchoolProgram Program { get; set; }
         public string AbsentRollCall { get; set; } = string.Empty;
         public string RollCallComment { get; set; } = string.Empty;
 
@@ -59,6 +60,7 @@ namespace StudentAdmissionLibrary
         /// <param name="grades"></param>
         /// <param name="testScore"></param>
         /// <param name="programOrientation"></param>
+        /// <param name="program"></param>
         /// <param name="absentRollCall"></param>
         /// <param name="rollCallComment"></param>
         public StudentAdmissionItems(string personNumber, DateOnly admissionDate,
@@ -67,7 +69,7 @@ namespace StudentAdmissionLibrary
             int choiceRank, string aestheticChoice, string language11, string language12,
             string language22, string individualChoice1, string motherTongue,
             string swedishAsSecondLanguage, double grades, double testScore,
-            string programOrientation, string absentRollCall, string rollCallComment)
+            string programOrientation, HighSchoolProgram program, string absentRollCall, string rollCallComment)
         {
             PersonNumber = personNumber;
             AdmissionDate = admissionDate;
@@ -90,6 +92,7 @@ namespace StudentAdmissionLibrary
             Grades = grades;
             TestScore = testScore;
             ProgramOrientation = programOrientation;
+            Program = program;
             AbsentRollCall = absentRollCall;
             RollCallComment = rollCallComment;
         }
@@ -121,6 +124,7 @@ namespace StudentAdmissionLibrary
             Grades = 0.0;
             TestScore = 0.0;
             ProgramOrientation = String.Empty;
+            Program = new();
             AbsentRollCall = String.Empty;
             RollCallComment = String.Empty;
         }

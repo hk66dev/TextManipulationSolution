@@ -18,6 +18,7 @@ namespace StudentAdmissionLibrary
         public string City { get; set; } = string.Empty;
         public int ChoiceRank { get; set; } = 0;
         public string ProgramOrientation { get; set; } = string.Empty;
+        public HighSchoolProgram Program { get; set; } = new();
 
 
         /// <summary>
@@ -30,8 +31,9 @@ namespace StudentAdmissionLibrary
         /// <param name="city"></param>
         /// <param name="choiceRank"></param>
         /// <param name="programOrientation"></param>
+        /// <param name="program"></param>
         public Student(string personNumber, string firstName, string lastName,
-            string formerSchool, string city, int choiceRank, string programOrientation)
+            string formerSchool, string city, int choiceRank, string programOrientation, HighSchoolProgram program)
         {
             PersonNumber = personNumber;
             FirstName = firstName;
@@ -40,6 +42,7 @@ namespace StudentAdmissionLibrary
             City = city;
             ChoiceRank = choiceRank;
             ProgramOrientation = programOrientation;
+            Program = program;
         }
 
         /// <summary>
@@ -55,6 +58,7 @@ namespace StudentAdmissionLibrary
             City = studentAdmissionItems.City;
             ChoiceRank = studentAdmissionItems.ChoiceRank;
             ProgramOrientation = studentAdmissionItems.ProgramOrientation;
+            Program = studentAdmissionItems.Program;
         }
 
         /// <summary>
@@ -69,6 +73,7 @@ namespace StudentAdmissionLibrary
             City = String.Empty;
             ChoiceRank = 0;
             ProgramOrientation = String.Empty;
+            Program = new();
         }
     }
 }

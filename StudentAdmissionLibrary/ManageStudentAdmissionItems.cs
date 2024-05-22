@@ -48,7 +48,6 @@ namespace StudentAdmissionLibrary
             string header = "PersonNumber\tCourseType\tCourse";
             output.AppendLine(header);
 
-            //foreach (var item in GetStudentAdmissionItemsList())
             foreach (var item in CourseChoices)
             {
                 string s = $"{item.PersonNumber}\t{item.CourseType}\t{item.Course}";
@@ -91,7 +90,7 @@ namespace StudentAdmissionLibrary
             // header and rows from the list
             StringBuilder output = new();
 
-            string header = "PersonNumber\tFirstName\tLastName\tFormerSchool\tCity\tChoiceRank\tProgramOrientation";
+            string header = "PersonNumber\tFirstName\tLastName\tFormerSchool\tCity\tChoiceRank\tProgramOrientation\tProgramCode\tProgramName";
             output.AppendLine(header);
 
             // TODO: test if this works
@@ -100,7 +99,8 @@ namespace StudentAdmissionLibrary
             {
                 string s =
                     $"{item.PersonNumber}\t{item.FirstName}\t{item.LastName}\t" +
-                    $"{item.FormerSchool}\t{item.City}\t{item.ChoiceRank}\t{item.ProgramOrientation}\t";
+                    $"{item.FormerSchool}\t{item.City}\t{item.ChoiceRank}\t" +
+                    $"{item.ProgramOrientation}\t{item.Program.ProgramCode}\t{item.Program.ProgramName}\t";
 
                 output.AppendLine(s);
             }
@@ -131,7 +131,8 @@ namespace StudentAdmissionLibrary
                     FormerSchool = studentAdmissionItems.FormerSchool,
                     City = studentAdmissionItems.City,
                     ChoiceRank = studentAdmissionItems.ChoiceRank,
-                    ProgramOrientation = studentAdmissionItems.ProgramOrientation
+                    ProgramOrientation = studentAdmissionItems.ProgramOrientation,
+                    Program = studentAdmissionItems.Program
                 };
 
                 // Add student to list
@@ -235,8 +236,9 @@ namespace StudentAdmissionLibrary
             string patternP3 = @"([\w, -]+alternativ)";
             string patternP4 = @"([\w, -]+introduktion[\w, -]*)";
             string patternP5 = @"([\w, -]+Personnummer[\w, -]+)";
-            string patternP6 = @"([\w, -]+högrehandsval[\w, /-]+)";
-            string pattern = $"{patternSSN}|{patternP1}|{patternP2}|{patternP3}|{patternP4}|{patternP5}|{patternP6}";
+            //string patternP6 = @"([\w, -]+högrehandsval[\w, /-]+)";
+            //string pattern = $"{patternSSN}|{patternP1}|{patternP2}|{patternP3}|{patternP4}|{patternP5}|{patternP6}";
+            string pattern = $"{patternSSN}|{patternP1}|{patternP2}|{patternP3}|{patternP4}|{patternP5}";
             //string pattern = $"{patternSSN}";
             Regex rx = new(pattern, RegexOptions.None);
 
@@ -248,11 +250,28 @@ namespace StudentAdmissionLibrary
 
             Regex rxSSN = new(patternSSN, RegexOptions.IgnorePatternWhitespace);
 
+            // variable to save the program code and name for later
+            HighSchoolProgram? tmpProgram = null;
+
             // the lamda expression is used to get an index
             // the index is used to join two rows when a swedish social security number 
             // is found on one row
             foreach (var (item, index) in ssSSN.Select((value, i) => (value, i)))
             {
+                // the lines is ordered so that the program string is first, then the students, that is applying for that progam, follows
+                // save the program code to complete the students information if program orientatien is missing
+                HighSchoolPrograms hsps = new();
+                foreach (var hsp in hsps.Programs)
+                {
+                    if (hsp != null)
+                    {
+                        if (hsp.ProgramName == item)
+                        {
+                            tmpProgram = hsp;
+                        }
+                    }
+                }
+                
                 // when swedish social security number is found
                 if (rxSSN.IsMatch(item))
                 {
@@ -472,7 +491,16 @@ namespace StudentAdmissionLibrary
                                 }
                                 break;
                             case 19:
-                                studentAdmissionItem.ProgramOrientation = sSplit[i].Trim();
+                                if (tmpProgram == null)
+                                {
+                                    studentAdmissionItem.ProgramOrientation = sSplit[i].Trim();
+                                    studentAdmissionItem.Program = new();
+                                }
+                                else
+                                {
+                                    studentAdmissionItem.ProgramOrientation = sSplit[i].Trim().Length > 0 ? sSplit[i].Trim() : tmpProgram.ProgramCode;
+                                    studentAdmissionItem.Program = tmpProgram;
+                                }
                                 break;
                             case 20:
                                 studentAdmissionItem.AbsentRollCall = sSplit[i].Trim();
@@ -518,7 +546,7 @@ namespace StudentAdmissionLibrary
                 "PersonNumber\tAdmissionDate\tFirstName\tLastName\tFormerSchool\tAddress\t" +
                 "PostalCode\tCity\tPhone\tMailAddress\tChoiceRank\tAestheticChoice\tLanguage11\t" +
                 "Language12\tLanguage22\tIndividualChoice1\tMotherTongue\tSwedishAsSecondLanguage\t" +
-                "Grades\tTestScore\tProgramOrientation\tAbsentRollCall\tRollCallComment";
+                "Grades\tTestScore\tProgramOrientation\tProgramCode\tProgramName\tAbsentRollCall\tRollCallComment";
             output.AppendLine(header);
 
             // TODO: test if this works
@@ -531,7 +559,7 @@ namespace StudentAdmissionLibrary
                     $"{item.MailAddress}\t{item.ChoiceRank}\t{item.AestheticChoice}\t{item.Language11}\t" +
                     $"{item.Language12}\t{item.Language22}\t{item.IndividualChoice1}\t{item.MotherTongue}\t" +
                     $"{item.SwedishAsSecondLanguage}\t{item.Grades}\t{item.TestScore}\t{item.ProgramOrientation}\t" +
-                    $"{item.AbsentRollCall}\t{item.RollCallComment}";
+                    $"\t{item.Program.ProgramCode}\t{item.Program.ProgramName}\t{item.AbsentRollCall}\t{item.RollCallComment}";
 
                 output.AppendLine(s);
             }

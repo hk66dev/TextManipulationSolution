@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace StudentAdmissionLibrary
 {
-    internal class HighSchoolProgram
+    public class HighSchoolProgram
     {
         public string ProgramCode { get; set; } = string.Empty;
         public string ProgramName { get; set; } = string.Empty;
@@ -30,9 +30,9 @@ namespace StudentAdmissionLibrary
 
     internal class HighSchoolPrograms
     {
-        public List<HighSchoolProgram> Programs { get; set; } = new List<HighSchoolProgram>();
+        public List<HighSchoolProgram> Programs { get; set; } = [];
 
-        public HighSchoolPrograms()
+        public  HighSchoolPrograms()
         {
             Programs.Add(new HighSchoolProgram() { ProgramCode = "AHADM", ProgramName = "Anpassad gymnasieskola - Administration, handel - och varuhantering" });
             Programs.Add(new HighSchoolProgram() { ProgramCode = "BA", ProgramName = "Bygg- och anläggningsprogrammet" });
