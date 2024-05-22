@@ -14,13 +14,13 @@ namespace StudentAdmissionLibrary
     {
         public string InputText { get; }
         public string? StudentAdmissionItemsToString { get; private set; }
-        public string? StudentsToString { get;  set; }
+        public string? StudentsToString { get; set; }
         public string? GradesToString { get; private set; }
         public string? CourseChoicesToString { get; private set; }
         public List<StudentAdmissionItems>? StudentAdmissionItemsList { get; set; }
-        public List<Student>? Students { get;  set; }
-        public List<Grade>? Grades { get;  set; }
-        public List<CourseChoice>? CourseChoices { get;  set; }
+        public List<Student>? Students { get; set; }
+        public List<Grade>? Grades { get; set; }
+        public List<CourseChoice>? CourseChoices { get; set; }
 
 
 
@@ -38,8 +38,8 @@ namespace StudentAdmissionLibrary
 
         private string? GetCourseChoicesToString()
         {
-            // check if list is null
-            if (CourseChoices == null) return string.Empty;
+            // check if list is null or empty
+            if (CourseChoices == null || CourseChoices.Count == 0) return string.Empty;
 
             // put together the output string,
             // header and rows from the list
@@ -59,10 +59,10 @@ namespace StudentAdmissionLibrary
             return output.ToString();
         }
 
-        private object GetGradesToString()
+        private string GetGradesToString()
         {
-            // check if list is null
-            if (Grades == null) return string.Empty;
+            // check if list is null or empty
+            if (Grades == null || Grades.Count == 0) return string.Empty;
 
             // put together the output string,
             // header and rows from the list
@@ -84,8 +84,8 @@ namespace StudentAdmissionLibrary
 
         private string GetStudentsToString()
         {
-            // check if list is null
-            if (Students == null)  return string.Empty;
+            // check if list is null or empty
+            if (Students == null || Students.Count == 0) return string.Empty;
 
             // put together the output string,
             // header and rows from the list
@@ -100,7 +100,7 @@ namespace StudentAdmissionLibrary
             {
                 string s =
                     $"{item.PersonNumber}\t{item.FirstName}\t{item.LastName}\t" +
-                    $"{item.FormerSchool}\t{item.City}\t{item.ChoiceRank}\t{item.ProgramOrientation}\t" ;
+                    $"{item.FormerSchool}\t{item.City}\t{item.ChoiceRank}\t{item.ProgramOrientation}\t";
 
                 output.AppendLine(s);
             }
@@ -108,7 +108,7 @@ namespace StudentAdmissionLibrary
             return output.ToString();
         }
 
-        private (List<Student>? Students, List<Grade>? Grades, List<CourseChoice>? CourseChoices) 
+        private (List<Student>? Students, List<Grade>? Grades, List<CourseChoice>? CourseChoices)
             GetStudentLists()
         //List<StudentAdmissionItems> studentAdmissionItemsList
         {
@@ -153,7 +153,7 @@ namespace StudentAdmissionLibrary
                 {
                     PersonNumber = studentAdmissionItems.PersonNumber,
                     CourseType = "AestheticChoice",
-                    Course = studentAdmissionItems.AestheticChoice
+                    Course = studentAdmissionItems.AestheticChoice.Length > 0 ? studentAdmissionItems.AestheticChoice : "Saknas"
                 };
                 // Add AestheticChoice to list
                 courseChoices.Add(courseChoice);
@@ -163,7 +163,7 @@ namespace StudentAdmissionLibrary
                 {
                     PersonNumber = studentAdmissionItems.PersonNumber,
                     CourseType = "Language11",
-                    Course = studentAdmissionItems.Language11
+                    Course = studentAdmissionItems.Language11.Length > 0 ? studentAdmissionItems.Language11 : "Saknas"
                 };
                 // Add Language11 to list
                 courseChoices.Add(courseChoice);
@@ -173,7 +173,7 @@ namespace StudentAdmissionLibrary
                 {
                     PersonNumber = studentAdmissionItems.PersonNumber,
                     CourseType = "Language12",
-                    Course = studentAdmissionItems.Language12
+                    Course = studentAdmissionItems.Language12.Length > 0 ? studentAdmissionItems.Language12 : "Saknas"
                 };
                 // Add Language12 to list
                 courseChoices.Add(courseChoice);
@@ -183,7 +183,7 @@ namespace StudentAdmissionLibrary
                 {
                     PersonNumber = studentAdmissionItems.PersonNumber,
                     CourseType = "Language22",
-                    Course = studentAdmissionItems.Language22
+                    Course = studentAdmissionItems.Language22.Length > 0 ? studentAdmissionItems.Language22 : "Saknas"
                 };
                 // Add Language22 to list
                 courseChoices.Add(courseChoice);
@@ -193,7 +193,7 @@ namespace StudentAdmissionLibrary
                 {
                     PersonNumber = studentAdmissionItems.PersonNumber,
                     CourseType = "IndividualChoice1",
-                    Course = studentAdmissionItems.IndividualChoice1
+                    Course = studentAdmissionItems.IndividualChoice1.Length > 0 ? studentAdmissionItems.IndividualChoice1 : "Saknas"
                 };
                 // Add IndividualChoice1 to list
                 courseChoices.Add(courseChoice);
@@ -203,7 +203,7 @@ namespace StudentAdmissionLibrary
                 {
                     PersonNumber = studentAdmissionItems.PersonNumber,
                     CourseType = "MotherTongue",
-                    Course = studentAdmissionItems.MotherTongue
+                    Course = studentAdmissionItems.MotherTongue.Length > 0 ? studentAdmissionItems.MotherTongue : "Saknas"
                 };
                 // Add MotherTongue to list
                 courseChoices.Add(courseChoice);
@@ -213,7 +213,7 @@ namespace StudentAdmissionLibrary
                 {
                     PersonNumber = studentAdmissionItems.PersonNumber,
                     CourseType = "SwedishAsSecondLanguage",
-                    Course = studentAdmissionItems.SwedishAsSecondLanguage
+                    Course = studentAdmissionItems.SwedishAsSecondLanguage.Length > 0 ? studentAdmissionItems.SwedishAsSecondLanguage : "Saknas"
                 };
                 // Add SwedishAsSecondLanguage to list
                 courseChoices.Add(courseChoice);
@@ -228,16 +228,13 @@ namespace StudentAdmissionLibrary
 
         public List<StudentAdmissionItems> GetStudentAdmissionItemsList()
         {
-            // build regex pattern used to split input [\w,åäöÅÄÖ -]+program[\w,åäöÅÄÖ -]+
+            // build regex pattern used to split input 
             string patternSSN = @"(\d{6}-\w{2}\d{2})";
             string patternP1 = @"([\w, -]+program[\w, -]+)";
-            //string patternP2 = @"Gymnas[ie]+särskola-[\w, -]+";
             string patternP2 = @"(Anpassad gymnasieskola[\w, -]+)";
             string patternP3 = @"([\w, -]+alternativ)";
             string patternP4 = @"([\w, -]+introduktion[\w, -]*)";
-            //string patternP5 = @"(Startar ej[\w, :-]+)";
             string patternP5 = @"([\w, -]+Personnummer[\w, -]+)";
-            //string patternP5 = @""""" ""Personnummer"",""Int. datum"",""Namn"",""Skola"",""Utdelningsadress"",""Postadress"",""Ort"",""Tel. nummer"",""E-postadress"",""Valrang"",""EsV"",""Mspr 1:1"",""Mspr 1:2"",""Mspr 2:2"",""IndV1"",""ML"",""SvA"",""Betyg"",""Provpoäng"",""Inriktning"",""Upprop uteblivit"",""Upprop kommentar"" """"";
             string patternP6 = @"([\w, -]+högrehandsval[\w, /-]+)";
             string pattern = $"{patternSSN}|{patternP1}|{patternP2}|{patternP3}|{patternP4}|{patternP5}|{patternP6}";
             //string pattern = $"{patternSSN}";
@@ -510,8 +507,8 @@ namespace StudentAdmissionLibrary
 
         public string GetStudentAdmissionItemsToString()
         {
-            // check if list is null
-            if (StudentAdmissionItemsList == null) return string.Empty;
+            // check if list is null or empty
+            if (StudentAdmissionItemsList == null || StudentAdmissionItemsList.Count == 0) return string.Empty;
 
             // put together the output string,
             // header and rows from the list
