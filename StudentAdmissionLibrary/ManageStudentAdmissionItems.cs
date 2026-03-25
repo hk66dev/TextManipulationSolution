@@ -70,7 +70,6 @@ namespace StudentAdmissionLibrary
             string header = "PersonNumber\tGrade";
             output.AppendLine(header);
 
-            //foreach (var item in GetStudentAdmissionItemsList())
             foreach (var item in Grades)
             {
                 string s = $"{item.PersonNumber}\t{item.Grades}";
@@ -93,8 +92,6 @@ namespace StudentAdmissionLibrary
             string header = "PersonNumber\tFirstName\tLastName\tFormerSchool\tCity\tChoiceRank\tProgramOrientation\tProgramCode\tProgramName";
             output.AppendLine(header);
 
-            // TODO: test if this works
-            //foreach (var item in GetStudentAdmissionItemsList())
             foreach (var item in Students)
             {
                 string s =
@@ -549,8 +546,6 @@ namespace StudentAdmissionLibrary
                 "Grades\tTestScore\tProgramOrientation\tProgramCode\tProgramName\tAbsentRollCall\tRollCallComment";
             output.AppendLine(header);
 
-            // TODO: test if this works
-            //foreach (var item in GetStudentAdmissionItemsList())
             foreach (var item in StudentAdmissionItemsList)
             {
                 string s =
