@@ -105,9 +105,7 @@ namespace StudentAdmissionLibrary
             return output.ToString();
         }
 
-        private (List<Student>? Students, List<Grade>? Grades, List<CourseChoice>? CourseChoices)
-            GetStudentLists()
-        //List<StudentAdmissionItems> studentAdmissionItemsList
+        private (List<Student>? Students, List<Grade>? Grades, List<CourseChoice>? CourseChoices) GetStudentLists()
         {
             if (StudentAdmissionItemsList == null) return (null, null, null);
 
@@ -554,7 +552,7 @@ namespace StudentAdmissionLibrary
                     $"{item.MailAddress}\t{item.ChoiceRank}\t{item.AestheticChoice}\t{item.Language11}\t" +
                     $"{item.Language12}\t{item.Language22}\t{item.IndividualChoice1}\t{item.MotherTongue}\t" +
                     $"{item.SwedishAsSecondLanguage}\t{item.Grades}\t{item.TestScore}\t{item.ProgramOrientation}\t" +
-                    $"\t{item.Program.ProgramCode}\t{item.Program.ProgramName}\t{item.AbsentRollCall}\t{item.RollCallComment}";
+                    $"{item.Program.ProgramCode}\t{item.Program.ProgramName}\t{item.AbsentRollCall}\t{item.RollCallComment}";
 
                 output.AppendLine(s);
             }
